@@ -16,10 +16,12 @@ import { finalize } from 'rxjs';
 import { Product } from '../../core/models/product';
 import { DolarAPIService } from '../../core/services/dolar-api.service';
 import { ProductsService } from '../../core/services/products.service';
+import { QuoteCartService } from '../../core/services/quote-cart.service';
+import { ShoppingCart } from '../shopping-cart/shopping-cart';
 
 @Component({
   selector: 'app-product-list',
-  imports: [ButtonModule, DecimalPipe],
+  imports: [ButtonModule, DecimalPipe, ShoppingCart],
   templateUrl: './product-list.html',
   styleUrl: './product-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,7 +29,10 @@ import { ProductsService } from '../../core/services/products.service';
 export class ProductList implements OnInit, AfterViewInit, OnDestroy {
   private readonly productsService = inject(ProductsService);
   private readonly dolarApiService = inject(DolarAPIService);
+  private readonly quoteCartService = inject(QuoteCartService);
   private readonly previewAnimationMs = 260;
+  private readonly desktopBreakpoint = 992;
+  private readonly resizeHandler = () => this.syncViewportMode();
   private observer?: IntersectionObserver;
   private closePreviewTimeout?: number;
 
@@ -46,11 +51,23 @@ export class ProductList implements OnInit, AfterViewInit, OnDestroy {
   protected readonly previewImageUrl = signal<string | null>(null);
   protected readonly previewImageName = signal<string>('');
   protected readonly isPreviewOpen = signal(false);
+  protected readonly isMobile = signal(false);
   protected readonly hasProducts = computed(() => this.products().length > 0);
+  protected readonly isDesktopCartVisible = computed(
+    () =>
+      !this.isMobile() &&
+      this.quoteCartService.hasItems() &&
+      this.quoteCartService.isDesktopOpen(),
+  );
 
   ngOnInit(): void {
+    this.syncViewportMode();
     this.loadExchangeRate();
     this.loadNextPage();
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', this.resizeHandler, { passive: true });
+    }
   }
 
   ngAfterViewInit(): void {
@@ -80,6 +97,18 @@ export class ProductList implements OnInit, AfterViewInit, OnDestroy {
 
     if (this.closePreviewTimeout) {
       window.clearTimeout(this.closePreviewTimeout);
+    }
+
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('resize', this.resizeHandler);
+    }
+  }
+
+  protected addToQuote(product: Product): void {
+    this.quoteCartService.addProduct(product);
+
+    if (!this.isMobile()) {
+      this.quoteCartService.openDesktop();
     }
   }
 
@@ -182,5 +211,14 @@ export class ProductList implements OnInit, AfterViewInit, OnDestroy {
           this.hasMore.set(false);
         },
       });
+  }
+
+  private syncViewportMode(): void {
+    if (typeof window === 'undefined') {
+      this.isMobile.set(false);
+      return;
+    }
+
+    this.isMobile.set(window.innerWidth < this.desktopBreakpoint);
   }
 }

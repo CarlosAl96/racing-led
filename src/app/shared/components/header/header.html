@@ -13,12 +13,26 @@
       </h1>
     </div>
 
-    <p-button
-      icon="pi pi-shopping-cart"
-      [rounded]="true"
-      [text]="true"
-      ariaLabel="Abrir carrito de compras"
-      styleClass="cart-button"
-    />
+    <span
+      class="cart-button-wrap p-overlay-badge"
+      pBadge
+      [value]="cartCount()"
+      severity="danger"
+      [badgeDisabled]="cartCount() === 0"
+    >
+      <button
+        pButton
+        type="button"
+        icon="pi pi-shopping-cart"
+        [rounded]="true"
+        [text]="true"
+        class="cart-button"
+        [class.is-active]="isCartOpen()"
+        [attr.aria-label]="
+          isCartOpen() ? 'Cerrar carrito de cotización' : 'Abrir carrito de cotización'
+        "
+        (click)="toggleCart()"
+      ></button>
+    </span>
   </div>
 </header>

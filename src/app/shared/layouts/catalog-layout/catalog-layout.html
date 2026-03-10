@@ -1,9 +1,13 @@
 <div class="catalog-shell">
-  <app-header></app-header>
+  <div #headerHost>
+    <app-header></app-header>
+  </div>
 
   <main class="catalog-content" aria-label="Contenido del catalogo">
     <router-outlet></router-outlet>
   </main>
+
+  <app-shopping-cart mode="mobile" [headerOffset]="headerHeight()"></app-shopping-cart>
 
   <app-footer class="catalog-footer"></app-footer>
 </div>

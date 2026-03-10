@@ -15,7 +15,7 @@ import { ToastService } from './core/services/toast.service';
 export class App implements OnInit, OnDestroy {
   protected readonly title = signal('racing-led');
   private readonly document = inject(DOCUMENT);
-  private readonly darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  private readonly darkModeMediaQuery = this.createDarkModeMediaQuery();
   private readonly colorSchemeHandler = (event: MediaQueryListEvent): void => {
     this.applyDarkMode(event.matches);
   };
@@ -43,5 +43,22 @@ export class App implements OnInit, OnDestroy {
   private applyDarkMode(isDark: boolean): void {
     this.document.documentElement.classList.toggle('app-dark', isDark);
     this.document.body.classList.toggle('app-dark', isDark);
+  }
+
+  private createDarkModeMediaQuery(): MediaQueryList {
+    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+      return window.matchMedia('(prefers-color-scheme: dark)');
+    }
+
+    return {
+      matches: false,
+      media: '(prefers-color-scheme: dark)',
+      onchange: null,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+      addListener: () => undefined,
+      removeListener: () => undefined,
+      dispatchEvent: () => false,
+    } as MediaQueryList;
   }
 }

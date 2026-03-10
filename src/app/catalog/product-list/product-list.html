@@ -9,75 +9,89 @@
       </div>
     </div>
   } @else {
-    @if (hasProducts()) {
-      <div class="products-grid">
-        @for (product of products(); track product.id) {
-          <article class="product-card">
-            <div
-              class="product-image-wrap"
-              tabindex="0"
-              role="button"
-              [attr.aria-label]="'Ver imagen ampliada de ' + product.name"
-              (click)="openImagePreview(resolveImage(product.url_image), product.name)"
-              (keydown.enter)="openImagePreview(resolveImage(product.url_image), product.name)"
-              (keydown.space)="openImagePreview(resolveImage(product.url_image), product.name)"
-            >
-              <img
-                [src]="resolveImage(product.url_image)"
-                [alt]="product.name"
-                class="product-image"
-                loading="lazy"
-                (error)="onImageError($event)"
-              />
-            </div>
+    <div
+      class="catalog-results"
+      [class.catalog-results--with-cart]="isDesktopCartVisible()"
+    >
+      <div class="catalog-results__products">
+        @if (hasProducts()) {
+          <div class="products-grid">
+            @for (product of products(); track product.id) {
+              <article class="product-card">
+                <div
+                  class="product-image-wrap"
+                  tabindex="0"
+                  role="button"
+                  [attr.aria-label]="'Ver imagen ampliada de ' + product.name"
+                  (click)="openImagePreview(resolveImage(product.url_image), product.name)"
+                  (keydown.enter)="openImagePreview(resolveImage(product.url_image), product.name)"
+                  (keydown.space)="openImagePreview(resolveImage(product.url_image), product.name)"
+                >
+                  <img
+                    [src]="resolveImage(product.url_image)"
+                    [alt]="product.name"
+                    class="product-image"
+                    loading="lazy"
+                    (error)="onImageError($event)"
+                  />
+                </div>
 
-            <div class="product-content">
-              <p class="product-sku m-0">SKU: {{ product.sku }}</p>
-              <h3 class="product-name m-0">{{ product.name }}</h3>
-              <p class="product-category m-0">{{ product.category || 'Sin categoría' }}</p>
-              <p class="product-price m-0">
-                @if (resolvePriceBs(product.price); as priceBs) {
-                  Bs {{ priceBs | number: '1.0-2' }}
-                } @else {
-                  Bs --
-                }
-              </p>
-            </div>
+                <div class="product-content">
+                  <p class="product-sku m-0">SKU: {{ product.sku }}</p>
+                  <h3 class="product-name m-0">{{ product.name }}</h3>
+                  <p class="product-category m-0">{{ product.category || 'Sin categoría' }}</p>
+                  <p class="product-price m-0">
+                    @if (resolvePriceBs(product.price); as priceBs) {
+                      Bs {{ priceBs | number: '1.0-2' }}
+                    } @else {
+                      Bs --
+                    }
+                  </p>
+                </div>
 
-            <p-button
-              label="Cotizar"
-              icon="pi pi-shopping-cart"
-              styleClass="w-full add-cart-button"
-            />
-          </article>
+                <button
+                  pButton
+                  type="button"
+                  label="Cotizar"
+                  icon="pi pi-shopping-cart"
+                  class="w-full add-cart-button"
+                  (click)="addToQuote(product)"
+                ></button>
+              </article>
+            }
+          </div>
+        } @else {
+          <div class="text-center py-8">No hay productos disponibles.</div>
         }
+
+        <div class="infinite-scroll-state mt-4">
+          @if (isLoadingMore()) {
+            <div
+              class="loading-parts loading-parts-more"
+              role="status"
+              aria-live="polite"
+              aria-label="Cargando repuestos"
+            >
+              <span class="loading-parts-wheel" aria-hidden="true">
+                <i class="pi pi-cog"></i>
+              </span>
+              <span class="loading-parts-text">Buscando repuestos...</span>
+            </div>
+          }
+
+          @if (!hasMore() && hasProducts()) {
+            <div class="text-center py-3">Has llegado al final del catálogo.</div>
+          }
+
+          <div #infiniteTrigger class="infinite-trigger" aria-hidden="true"></div>
+        </div>
       </div>
-    } @else {
-      <div class="text-center py-8">No hay productos disponibles.</div>
-    }
+
+      @if (isDesktopCartVisible()) {
+        <app-shopping-cart mode="desktop" class="catalog-results__cart"></app-shopping-cart>
+      }
+    </div>
   }
-
-  <div class="infinite-scroll-state mt-4">
-    @if (isLoadingMore()) {
-      <div
-        class="loading-parts loading-parts-more"
-        role="status"
-        aria-live="polite"
-        aria-label="Cargando repuestos"
-      >
-        <span class="loading-parts-wheel" aria-hidden="true">
-          <i class="pi pi-cog"></i>
-        </span>
-        <span class="loading-parts-text">Buscando repuestos...</span>
-      </div>
-    }
-
-    @if (!hasMore() && hasProducts()) {
-      <div class="text-center py-3">Has llegado al final del catálogo.</div>
-    }
-
-    <div #infiniteTrigger class="infinite-trigger" aria-hidden="true"></div>
-  </div>
 </section>
 
 @if (previewImageUrl(); as imageUrl) {

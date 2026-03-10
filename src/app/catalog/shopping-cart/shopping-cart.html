@@ -1,1 +1,164 @@
-<p>shopping-cart works!</p>
+<ng-template #cartContent>
+  <section class="cart-shell" aria-label="Carrito de cotización">
+    <div class="cart-panel-header">
+      <div>
+        <h2 class="cart-title m-0">Tu selección</h2>
+      </div>
+
+      <button
+        pButton
+        type="button"
+        icon="pi pi-times"
+        [rounded]="true"
+        [text]="true"
+        class="cart-close-button"
+        aria-label="Cerrar carrito de cotización"
+        (click)="closeCart()"
+      ></button>
+    </div>
+
+    @if (hasItems()) {
+      <div class="cart-items" role="list">
+        @for (item of items(); track item.product.id) {
+          <article class="cart-item" role="listitem">
+            <img
+              [src]="resolveImage(item.product.url_image)"
+              [alt]="item.product.name"
+              class="cart-item-image"
+              loading="lazy"
+              (error)="onImageError($event)"
+            />
+
+            <div class="cart-item-content">
+              <p class="cart-item-sku m-0">SKU: {{ item.product.sku }}</p>
+              <h3 class="cart-item-name m-0">{{ item.product.name }}</h3>
+              <p class="cart-item-category m-0">
+                {{ item.product.category || 'Sin categoría' }}
+              </p>
+
+              <div class="cart-item-prices">
+                <span>USD {{ item.product.price | number: '1.0-2' }}</span>
+                @if (resolveLineTotalBs(item.product.price, item.quantity); as lineTotalBs) {
+                  <span>Bs {{ lineTotalBs | number: '1.0-2' }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="cart-item-footer">
+              <div class="cart-quantity-controls" aria-label="Cantidad del producto">
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-minus"
+                  [rounded]="true"
+                  [text]="true"
+                  class="cart-quantity-button"
+                  [attr.aria-label]="'Restar una unidad de ' + item.product.name"
+                  (click)="decrementQuantity(item.product.id)"
+                ></button>
+
+                <span class="cart-quantity-value">{{ item.quantity }}</span>
+
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-plus"
+                  [rounded]="true"
+                  [text]="true"
+                  class="cart-quantity-button"
+                  [attr.aria-label]="'Agregar una unidad de ' + item.product.name"
+                  (click)="incrementQuantity(item.product.id)"
+                ></button>
+              </div>
+
+              <div class="cart-item-actions">
+                <p class="cart-line-total m-0">
+                  USD {{ resolveLineTotalUsd(item.product.price, item.quantity) | number: '1.0-2' }}
+                </p>
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  [text]="true"
+                  class="cart-remove-button"
+                  severity="danger"
+                  [attr.aria-label]="'Quitar ' + item.product.name + ' del carrito'"
+                  (click)="removeProduct(item.product.id)"
+                ></button>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+
+      <div class="cart-totals">
+        <div class="cart-total-row">
+          <span>Productos</span>
+          <strong>{{ totalQuantity() }}</strong>
+        </div>
+
+        <div class="cart-total-row">
+          <span>Total estimado USD</span>
+          <strong>USD {{ totalAmountUsd() | number: '1.0-2' }}</strong>
+        </div>
+
+        @if (totalAmountBs(); as totalBs) {
+          <div class="cart-total-row">
+            <span>Total estimado Bs</span>
+            <strong>Bs {{ totalBs | number: '1.0-2' }}</strong>
+          </div>
+        }
+
+        <button
+          pButton
+          type="button"
+          label="Vaciar carrito"
+          severity="secondary"
+          [outlined]="true"
+          class="w-full"
+          (click)="clearCart()"
+        ></button>
+
+        <button
+          pButton
+          type="button"
+          label="Cotizar ahora"
+          icon="pi pi-whatsapp"
+          severity="primary"
+          class="w-full"
+          (click)="clearCart()"
+        ></button>
+      </div>
+    } @else {
+      <div class="cart-empty-state">
+        <i class="pi pi-shopping-cart" aria-hidden="true"></i>
+        <p class="m-0">Agrega productos desde el catálogo para preparar la cotización.</p>
+      </div>
+    }
+  </section>
+</ng-template>
+
+@if (mode() === 'desktop') {
+  @if (isVisible()) {
+    <aside class="shopping-cart-panel">
+      <ng-container [ngTemplateOutlet]="cartContent"></ng-container>
+    </aside>
+  }
+} @else {
+  <p-drawer
+    position="bottom"
+    [visible]="isVisible()"
+    [appendTo]="'body'"
+    [dismissible]="true"
+    [modal]="true"
+    [blockScroll]="true"
+    [closable]="false"
+    [style]="drawerStyle()"
+    [maskStyle]="drawerMaskStyle()"
+    styleClass="shopping-cart-mobile-drawer"
+    (visibleChange)="onMobileVisibilityChange($event)"
+  >
+    <ng-container [ngTemplateOutlet]="cartContent"></ng-container>
+  </p-drawer>
+}
