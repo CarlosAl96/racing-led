@@ -9,10 +9,7 @@
       </div>
     </div>
   } @else {
-    <div
-      class="catalog-results"
-      [class.catalog-results--with-cart]="isDesktopCartVisible()"
-    >
+    <div class="catalog-results" [class.catalog-results--with-cart]="isDesktopCartVisible()">
       <div class="catalog-results__products">
         @if (hasProducts()) {
           <div class="products-grid">

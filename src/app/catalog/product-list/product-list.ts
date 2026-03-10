@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   ElementRef,
@@ -26,7 +25,7 @@ import { ShoppingCart } from '../shopping-cart/shopping-cart';
   styleUrl: './product-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductList implements OnInit, AfterViewInit, OnDestroy {
+export class ProductList implements OnInit, OnDestroy {
   private readonly productsService = inject(ProductsService);
   private readonly dolarApiService = inject(DolarAPIService);
   private readonly quoteCartService = inject(QuoteCartService);
@@ -36,8 +35,16 @@ export class ProductList implements OnInit, AfterViewInit, OnDestroy {
   private observer?: IntersectionObserver;
   private closePreviewTimeout?: number;
 
-  @ViewChild('infiniteTrigger', { static: true })
-  private infiniteTrigger?: ElementRef<HTMLDivElement>;
+  @ViewChild('infiniteTrigger')
+  private set infiniteTrigger(element: ElementRef<HTMLDivElement> | undefined) {
+    const trigger = element?.nativeElement;
+
+    if (!trigger) {
+      return;
+    }
+
+    this.getObserver()?.observe(trigger);
+  }
 
   protected readonly rows = 20;
   protected readonly fallbackImage = 'assets/product-placeholder.jpg';
@@ -55,9 +62,7 @@ export class ProductList implements OnInit, AfterViewInit, OnDestroy {
   protected readonly hasProducts = computed(() => this.products().length > 0);
   protected readonly isDesktopCartVisible = computed(
     () =>
-      !this.isMobile() &&
-      this.quoteCartService.hasItems() &&
-      this.quoteCartService.isDesktopOpen(),
+      !this.isMobile() && this.quoteCartService.hasItems() && this.quoteCartService.isDesktopOpen(),
   );
 
   ngOnInit(): void {
@@ -68,28 +73,6 @@ export class ProductList implements OnInit, AfterViewInit, OnDestroy {
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.resizeHandler, { passive: true });
     }
-  }
-
-  ngAfterViewInit(): void {
-    if (!this.infiniteTrigger) {
-      return;
-    }
-
-    this.observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting) {
-          this.loadNextPage();
-        }
-      },
-      {
-        root: null,
-        rootMargin: '320px 0px',
-        threshold: 0.1,
-      },
-    );
-
-    this.observer.observe(this.infiniteTrigger.nativeElement);
   }
 
   ngOnDestroy(): void {
@@ -211,6 +194,32 @@ export class ProductList implements OnInit, AfterViewInit, OnDestroy {
           this.hasMore.set(false);
         },
       });
+  }
+
+  private getObserver(): IntersectionObserver | undefined {
+    if (this.observer) {
+      return this.observer;
+    }
+
+    if (typeof IntersectionObserver === 'undefined') {
+      return undefined;
+    }
+
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting) {
+          this.loadNextPage();
+        }
+      },
+      {
+        root: null,
+        rootMargin: '320px 0px',
+        threshold: 0.1,
+      },
+    );
+
+    return this.observer;
   }
 
   private syncViewportMode(): void {
