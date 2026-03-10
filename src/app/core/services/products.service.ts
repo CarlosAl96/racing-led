@@ -11,6 +11,7 @@ import { ResponsePagination } from '../models/responsePagination';
 })
 export class ProductsService {
   private getProductsUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/dynamic-worker`;
+  private getCategoriesUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/bright-worker`;
   private createProductUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}products/store`;
   private updateProductUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}products/update/`;
   private deleteProductUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}products/delete`;
@@ -18,13 +19,30 @@ export class ProductsService {
   constructor(private http: HttpClient) {}
 
   public getProducts(query: QueryPagination): Observable<ResponsePagination<Product[]>> {
-    const httpParams = new HttpParams().appendAll({ ...query });
+    let httpParams = new HttpParams()
+      .set('page', String(query.page))
+      .set('limit', String(query.limit));
+
+    if (query.search) {
+      httpParams = httpParams.set('search', query.search);
+    }
+
+    if (query.category) {
+      httpParams = httpParams.set('category', query.category);
+    }
+
     const options = httpParams
       ? { params: httpParams, headers: new HttpHeaders() }
       : { headers: new HttpHeaders() };
 
     return this.http
       .get<ResponsePagination<Product[]>>(this.getProductsUrl, options)
+      .pipe(catchError(this.handleError));
+  }
+
+  public getCategories(): Observable<{ data: string[] }> {
+    return this.http
+      .get<{ data: string[] }>(this.getCategoriesUrl, { headers: new HttpHeaders() })
       .pipe(catchError(this.handleError));
   }
 

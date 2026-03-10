@@ -1,4 +1,47 @@
 <section class="product-list-wrapper px-3 py-4 md:px-4">
+  <form class="catalog-toolbar" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+    <div class="catalog-toolbar__field catalog-toolbar__field--search">
+      <label class="catalog-toolbar__label" for="product-search">Buscar repuesto</label>
+      <input
+        id="product-search"
+        pInputText
+        type="search"
+        formControlName="search"
+        class="catalog-toolbar__input"
+        placeholder="Nombre, SKU o palabra clave"
+      />
+    </div>
+
+    <div class="catalog-toolbar__field catalog-toolbar__field--category">
+      <label class="catalog-toolbar__label" for="product-category">Categoría</label>
+      <p-select
+        inputId="product-category"
+        formControlName="category"
+        [options]="categoryOptions()"
+        optionLabel="label"
+        optionValue="value"
+        [loading]="isLoadingCategories()"
+        placeholder="Todas las categorías"
+        class="catalog-toolbar__select"
+      ></p-select>
+    </div>
+
+    <div class="catalog-toolbar__actions">
+      <button pButton type="submit" icon="pi pi-search" label="Buscar"></button>
+
+      @if (hasActiveFilters()) {
+        <button
+          pButton
+          type="button"
+          severity="secondary"
+          variant="outlined"
+          label="Limpiar"
+          (click)="clearFilters()"
+        ></button>
+      }
+    </div>
+  </form>
+
   @if (isLoading()) {
     <div class="loading-initial" role="status" aria-live="polite" aria-label="Cargando repuestos">
       <div class="loading-parts">
@@ -11,6 +54,14 @@
   } @else {
     <div class="catalog-results" [class.catalog-results--with-cart]="isDesktopCartVisible()">
       <div class="catalog-results__products">
+        <div class="catalog-meta">
+          <span>{{ totalRecords() }} repuestos disponibles</span>
+
+          @if (hasActiveFilters()) {
+            <span>Filtros activos</span>
+          }
+        </div>
+
         @if (hasProducts()) {
           <div class="products-grid">
             @for (product of products(); track product.id) {
@@ -58,7 +109,9 @@
             }
           </div>
         } @else {
-          <div class="text-center py-8">No hay productos disponibles.</div>
+          <div class="text-center py-8">
+            {{ hasActiveFilters() ? 'No hay productos para esta búsqueda.' : 'No hay productos disponibles.' }}
+          </div>
         }
 
         <div class="infinite-scroll-state mt-4">

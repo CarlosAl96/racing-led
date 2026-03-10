@@ -18,10 +18,16 @@ describe('ProductList', () => {
   let component: ProductList;
   let fixture: ComponentFixture<ProductList>;
   let getProductsSpy: ReturnType<typeof vi.fn>;
+  let getCategoriesSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     observeSpy = vi.fn();
     disconnectSpy = vi.fn();
+    getCategoriesSpy = vi.fn().mockReturnValue(
+      of({
+        data: ['ACCESORIOS', 'ILUMINACION'],
+      }),
+    );
     getProductsSpy = vi.fn().mockReturnValue(
       of({
         data: [
@@ -57,6 +63,7 @@ describe('ProductList', () => {
         {
           provide: ProductsService,
           useValue: {
+            getCategories: getCategoriesSpy,
             getProducts: getProductsSpy,
           },
         },
@@ -91,5 +98,29 @@ describe('ProductList', () => {
   it('should observe the infinite scroll trigger after the first page renders', () => {
     expect(getProductsSpy).toHaveBeenCalledTimes(1);
     expect(observeSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should request products using the selected category and search term', () => {
+    const productList = component as unknown as {
+      filtersForm: {
+        setValue: (value: { search: string; category: string }) => void;
+      };
+      applyFilters: () => void;
+    };
+
+    getProductsSpy.mockClear();
+    productList.filtersForm.setValue({
+      search: 'led',
+      category: 'ILUMINACION',
+    });
+
+    productList.applyFilters();
+
+    expect(getProductsSpy).toHaveBeenCalledWith({
+      page: 1,
+      limit: 20,
+      search: 'led',
+      category: 'ILUMINACION',
+    });
   });
 });

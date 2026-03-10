@@ -10,17 +10,25 @@ import {
   signal,
 } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { finalize } from 'rxjs';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { finalize, Subscription } from 'rxjs';
 import { Product } from '../../core/models/product';
 import { DolarAPIService } from '../../core/services/dolar-api.service';
 import { ProductsService } from '../../core/services/products.service';
 import { QuoteCartService } from '../../core/services/quote-cart.service';
 import { ShoppingCart } from '../shopping-cart/shopping-cart';
 
+interface CategoryOption {
+  label: string;
+  value: string;
+}
+
 @Component({
   selector: 'app-product-list',
-  imports: [ButtonModule, DecimalPipe, ShoppingCart],
+  imports: [ButtonModule, DecimalPipe, InputTextModule, ReactiveFormsModule, SelectModule, ShoppingCart],
   templateUrl: './product-list.html',
   styleUrl: './product-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,6 +42,7 @@ export class ProductList implements OnInit, OnDestroy {
   private readonly resizeHandler = () => this.syncViewportMode();
   private observer?: IntersectionObserver;
   private closePreviewTimeout?: number;
+  private productsRequestSubscription?: Subscription;
 
   @ViewChild('infiniteTrigger')
   private set infiniteTrigger(element: ElementRef<HTMLDivElement> | undefined) {
@@ -43,23 +52,48 @@ export class ProductList implements OnInit, OnDestroy {
       return;
     }
 
-    this.getObserver()?.observe(trigger);
+    const observer = this.getObserver();
+
+    if (!observer) {
+      return;
+    }
+
+    observer.disconnect();
+    observer.observe(trigger);
   }
 
   protected readonly rows = 20;
   protected readonly fallbackImage = 'assets/product-placeholder.jpg';
+  protected readonly filtersForm = new FormGroup({
+    search: new FormControl('', { nonNullable: true }),
+    category: new FormControl('', { nonNullable: true }),
+  });
   protected readonly products = signal<Product[]>([]);
+  protected readonly categories = signal<string[]>([]);
   protected readonly totalRecords = signal(0);
   protected readonly isLoading = signal(false);
   protected readonly isLoadingMore = signal(false);
+  protected readonly isLoadingCategories = signal(false);
   protected readonly hasMore = signal(true);
   protected readonly nextPage = signal(1);
   protected readonly exchangeRate = signal<number | null>(null);
+  protected readonly appliedSearch = signal('');
+  protected readonly appliedCategory = signal('');
   protected readonly previewImageUrl = signal<string | null>(null);
   protected readonly previewImageName = signal<string>('');
   protected readonly isPreviewOpen = signal(false);
   protected readonly isMobile = signal(false);
   protected readonly hasProducts = computed(() => this.products().length > 0);
+  protected readonly hasActiveFilters = computed(
+    () => !!this.appliedSearch() || !!this.appliedCategory(),
+  );
+  protected readonly categoryOptions = computed<CategoryOption[]>(() => [
+    { label: 'Todas las categorías', value: '' },
+    ...this.categories().map((category) => ({
+      label: category,
+      value: category,
+    })),
+  ]);
   protected readonly isDesktopCartVisible = computed(
     () =>
       !this.isMobile() && this.quoteCartService.hasItems() && this.quoteCartService.isDesktopOpen(),
@@ -67,6 +101,7 @@ export class ProductList implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.syncViewportMode();
+    this.loadCategories();
     this.loadExchangeRate();
     this.loadNextPage();
 
@@ -76,6 +111,7 @@ export class ProductList implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.productsRequestSubscription?.unsubscribe();
     this.observer?.disconnect();
 
     if (this.closePreviewTimeout) {
@@ -132,6 +168,22 @@ export class ProductList implements OnInit, OnDestroy {
     }, this.previewAnimationMs);
   }
 
+  protected applyFilters(): void {
+    this.appliedSearch.set(this.filtersForm.controls.search.value.trim());
+    this.appliedCategory.set(this.filtersForm.controls.category.value.trim());
+    this.resetProductsAndReload();
+  }
+
+  protected clearFilters(): void {
+    this.filtersForm.setValue({
+      search: '',
+      category: '',
+    });
+    this.appliedSearch.set('');
+    this.appliedCategory.set('');
+    this.resetProductsAndReload();
+  }
+
   private loadExchangeRate(): void {
     this.dolarApiService.getOfficialRate().subscribe({
       next: (response) => {
@@ -157,10 +209,12 @@ export class ProductList implements OnInit, OnDestroy {
       this.isLoadingMore.set(true);
     }
 
-    this.productsService
+    this.productsRequestSubscription = this.productsService
       .getProducts({
         page: pageToLoad,
         limit: this.rows,
+        search: this.appliedSearch() || undefined,
+        category: this.appliedCategory() || undefined,
       })
       .pipe(
         finalize(() => {
@@ -194,6 +248,34 @@ export class ProductList implements OnInit, OnDestroy {
           this.hasMore.set(false);
         },
       });
+  }
+
+  private loadCategories(): void {
+    this.isLoadingCategories.set(true);
+
+    this.productsService
+      .getCategories()
+      .pipe(finalize(() => this.isLoadingCategories.set(false)))
+      .subscribe({
+        next: (response) => {
+          this.categories.set(response.data ?? []);
+        },
+        error: () => {
+          this.categories.set([]);
+        },
+      });
+  }
+
+  private resetProductsAndReload(): void {
+    this.productsRequestSubscription?.unsubscribe();
+    this.observer?.disconnect();
+    this.products.set([]);
+    this.totalRecords.set(0);
+    this.hasMore.set(true);
+    this.nextPage.set(1);
+    this.isLoading.set(false);
+    this.isLoadingMore.set(false);
+    this.loadNextPage();
   }
 
   private getObserver(): IntersectionObserver | undefined {
