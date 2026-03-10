@@ -24,6 +24,7 @@ import { QuoteCartService } from '../../core/services/quote-cart.service';
 export class ShoppingCart implements OnInit {
   private readonly quoteCartService = inject(QuoteCartService);
   private readonly dolarApiService = inject(DolarAPIService);
+  private readonly whatsappPhone = '+584147580181';
 
   readonly mode = input<'desktop' | 'mobile'>('desktop');
   readonly headerOffset = input(0);
@@ -93,6 +94,20 @@ export class ShoppingCart implements OnInit {
     this.quoteCartService.clear();
   }
 
+  protected quoteOnWhatsApp(): void {
+    if (!this.hasItems()) {
+      return;
+    }
+
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const message = this.buildWhatsAppMessage();
+    const whatsappUrl = `https://wa.me/${this.whatsappPhone}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+  }
+
   protected resolveLineTotalUsd(priceUsd: number, quantity: number): number {
     return priceUsd * quantity;
   }
@@ -124,5 +139,44 @@ export class ShoppingCart implements OnInit {
         this.exchangeRate.set(null);
       },
     });
+  }
+
+  private buildWhatsAppMessage(): string {
+    const productLines = this.items().map((item, index) => {
+      const subtotalUsd = this.resolveLineTotalUsd(item.product.price, item.quantity);
+      const subtotalBs = this.resolveLineTotalBs(item.product.price, item.quantity);
+      const category = item.product.category || 'Sin categoría';
+
+      return [
+        `${index + 1}. ${item.product.name}`,
+        `SKU: ${item.product.sku}`,
+        `Categoría: ${category}`,
+        `Cantidad: ${item.quantity}`,
+        `Precio unitario USD: ${item.product.price.toFixed(2)}`,
+        `Subtotal USD: ${subtotalUsd.toFixed(2)}`,
+        subtotalBs === null ? '' : `Subtotal Bs: ${subtotalBs.toFixed(2)}`,
+      ]
+        .filter(Boolean)
+        .join('\n');
+    });
+
+    const messageSections = [
+      'Hola, quiero solicitar una cotización para los siguientes productos:',
+      '',
+      ...productLines.flatMap((line) => [line, '']),
+      `Total de productos: ${this.totalQuantity()}`,
+      `Total estimado USD: ${this.totalAmountUsd().toFixed(2)}`,
+      this.totalAmountBs() === null ? '' : `Total estimado Bs: ${this.totalAmountBs()!.toFixed(2)}`,
+      '',
+      'Quedo atento a su respuesta. Gracias.',
+    ];
+
+    return messageSections.filter((section, index, sections) => {
+      if (section !== '') {
+        return true;
+      }
+
+      return sections[index - 1] !== '' && sections[index + 1] !== '';
+    }).join('\n');
   }
 }
