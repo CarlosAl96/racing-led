@@ -1,1 +1,24 @@
-<p>header works!</p>
+<header class="header-shell px-3 py-2 md:px-2 md:py-2">
+  <div class="flex align-items-center justify-content-between gap-3">
+    <div class="flex align-items-center gap-3 min-w-0">
+      <img
+        src="assets/logo.png"
+        width="120"
+        height="58"
+        alt="Logo Racing Led"
+        class="header-logo"
+      />
+      <h1 class="header-title m-0 white-space-nowrap overflow-hidden text-overflow-ellipsis">
+        {{ brandTitle }}
+      </h1>
+    </div>
+
+    <p-button
+      icon="pi pi-shopping-cart"
+      [rounded]="true"
+      [text]="true"
+      ariaLabel="Abrir carrito de compras"
+      styleClass="cart-button"
+    />
+  </div>
+</header>

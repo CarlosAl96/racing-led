@@ -31,10 +31,7 @@
             ],
             "styles": [
               "src/styles.scss",
-              "src/assets/themes/theme.css",
               "node_modules/primeflex/primeflex.css",
-              "node_modules/primeflex/themes/primeone-light.css",
-              "node_modules/primeflex/themes/primeone-dark.css",
               "node_modules/primeicons/primeicons.css"
             ]
           },

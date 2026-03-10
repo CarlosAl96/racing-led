@@ -1,1 +1,90 @@
-<p>footer works!</p>
+<footer class="footer-shell px-3 py-2 md:px-4 md:py-2">
+  <section
+    class="footer-compact"
+    [class.is-expanded]="isExpanded()"
+    (mouseenter)="openDetails()"
+    (mouseleave)="closeDetails()"
+    aria-label="Informacion de contacto Racing Led"
+  >
+    <div class="footer-visible">
+      <div class="footer-brand">
+        <h3 class="footer-title m-0">RACING LED</h3>
+        <p class="footer-address m-0">
+          <i class="pi pi-map-marker" aria-hidden="true"></i>
+          Calle 45 # 12-34, Local 7, Bogota, Colombia
+        </p>
+      </div>
+
+      @if (!isExpanded()) {
+        <button
+          type="button"
+          class="footer-toggle"
+          (click)="toggleDetails()"
+          [attr.aria-expanded]="isExpanded()"
+          aria-controls="footer-extra"
+          aria-label="Mostrar informacion adicional"
+        >
+          <i class="pi pi-angle-down" aria-hidden="true"></i>
+        </button>
+      }
+    </div>
+
+    <div id="footer-extra" class="footer-extra mt-1" [attr.aria-hidden]="!isExpanded()">
+      <div class="footer-extra-grid">
+        <p class="footer-item m-0">
+          <i class="pi pi-car" aria-hidden="true"></i>
+          Especialistas en iluminacion, seguridad y accesorios automotrices
+        </p>
+        <p class="footer-item m-0">
+          <i class="pi pi-clock" aria-hidden="true"></i>
+          Lun - Sab: 8:00 AM a 6:00 PM
+        </p>
+        <p class="footer-item m-0">
+          <i class="pi pi-send" aria-hidden="true"></i>
+          Envio nacional y retiros en tienda
+        </p>
+        <p class="footer-item m-0">
+          <i class="pi pi-credit-card" aria-hidden="true"></i>
+          Pago movil, transferencia, tarjetas y efectivo
+        </p>
+
+        <p class="footer-item m-0">
+          <i class="pi pi-phone" aria-hidden="true"></i>
+          +57 300 111 2233
+        </p>
+      </div>
+
+      <div class="footer-social" aria-label="Redes sociales">
+        <a
+          href="https://wa.me/573001112233"
+          target="_blank"
+          rel="noreferrer"
+          class="footer-social-link"
+          aria-label="WhatsApp"
+        >
+          <i class="pi pi-whatsapp" aria-hidden="true"></i>
+        </a>
+        <a
+          href="https://instagram.com"
+          target="_blank"
+          rel="noreferrer"
+          class="footer-social-link"
+          aria-label="Instagram"
+        >
+          <i class="pi pi-instagram" aria-hidden="true"></i>
+        </a>
+        <a
+          href="mailto:info@racingled.com"
+          target="_blank"
+          rel="noreferrer"
+          class="footer-social-link"
+          aria-label="Email"
+        >
+          <i class="pi pi-envelope" aria-hidden="true"></i>
+        </a>
+      </div>
+
+      <small class="footer-copy">© {{ currentYear }} Racing Led.</small>
+    </div>
+  </section>
+</footer>

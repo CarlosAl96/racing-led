@@ -1,0 +1,72 @@
+:host {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: block;
+}
+
+.header-shell {
+  background-color: color-mix(in srgb, var(--p-surface-0) 88%, transparent);
+  border-bottom: 1px solid var(--p-content-border-color);
+  backdrop-filter: blur(6px);
+  animation: header-enter 280ms ease-out;
+}
+
+.header-logo {
+  display: block;
+  height: auto;
+  max-width: 120px;
+  animation: logo-enter 360ms ease-out;
+}
+
+.header-title {
+  color: var(--p-primary-700);
+  font-weight: 700;
+  letter-spacing: 0.18rem;
+  font-size: clamp(1rem, 0.9rem + 0.6vw, 1.4rem);
+}
+
+:host-context(.app-dark) .header-title {
+  color: var(--p-primary-200);
+}
+
+:host ::ng-deep .cart-button {
+  transition: transform 180ms ease;
+}
+
+:host ::ng-deep .cart-button:hover {
+  transform: translateY(-1px) scale(1.05);
+}
+
+@keyframes header-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes logo-enter {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header-shell,
+  .header-logo {
+    animation: none;
+  }
+
+  :host ::ng-deep .cart-button {
+    transition: none;
+  }
+}

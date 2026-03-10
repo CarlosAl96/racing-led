@@ -1,0 +1,24 @@
+:host {
+	display: block;
+	height: 100dvh;
+}
+
+.catalog-shell {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	overflow: hidden;
+}
+
+.catalog-content {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+	overflow-x: hidden;
+	overscroll-behavior: contain;
+	-webkit-overflow-scrolling: touch;
+}
+
+.catalog-footer {
+	flex: 0 0 auto;
+}

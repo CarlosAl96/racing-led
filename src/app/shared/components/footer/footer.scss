@@ -1,0 +1,202 @@
+:host {
+  display: block;
+  margin-top: auto;
+}
+
+.footer-shell {
+  border-top: 1px solid var(--p-content-border-color);
+  background: color-mix(in srgb, var(--p-surface-0) 90%, transparent);
+  display: flex;
+  justify-content: center;
+}
+
+.footer-compact {
+  width: min(980px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  text-align: left;
+  border-radius: var(--p-border-radius-lg);
+  padding: 0.55rem 0.85rem;
+  outline: none;
+}
+
+.footer-title {
+  color: var(--p-primary-600);
+  letter-spacing: 0.16rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.footer-visible {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.footer-brand {
+  min-width: 0;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.footer-address,
+.footer-item,
+.footer-copy,
+.footer-extra {
+  color: var(--p-text-muted-color);
+  line-height: 1.35;
+  font-size: 0.84rem;
+}
+
+.footer-toggle {
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 1px solid color-mix(in srgb, var(--p-primary-500) 35%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--p-primary-500) 10%, transparent);
+  color: var(--p-primary-600);
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.footer-toggle:hover {
+  color: var(--p-primary-700);
+  background: color-mix(in srgb, var(--p-primary-500) 20%, transparent);
+}
+
+.footer-address,
+.footer-item,
+.footer-link,
+.footer-copy {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+}
+
+.footer-link {
+  color: color-mix(in srgb, var(--p-text-color) 88%, var(--p-primary-500));
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+
+.footer-link:hover {
+  color: var(--p-primary-color);
+}
+
+.footer-extra {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    max-height 300ms ease,
+    opacity 220ms ease,
+    transform 220ms ease;
+}
+
+.footer-extra-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem 1rem;
+}
+
+.footer-social {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.footer-social-link {
+  width: 1.8rem;
+  height: 1.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: var(--p-primary-600);
+  text-decoration: none;
+  background: color-mix(in srgb, var(--p-primary-500) 10%, transparent);
+  transition:
+    color 180ms ease,
+    transform 180ms ease,
+    background-color 180ms ease;
+}
+
+.footer-social-link:hover {
+  color: var(--p-primary-700);
+  background: color-mix(in srgb, var(--p-primary-500) 22%, transparent);
+  transform: translateY(-1px);
+}
+
+.footer-compact.is-expanded .footer-extra,
+.footer-compact:focus-within .footer-extra {
+  max-height: 300px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .footer-compact:hover .footer-extra {
+    max-height: 300px;
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.footer-toggle:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--p-primary-500) 45%, transparent);
+  border-radius: 0.3rem;
+}
+
+:host-context(.app-dark) .footer-link {
+  color: color-mix(in srgb, var(--p-primary-100) 72%, white);
+}
+
+:host-context(.app-dark) .footer-link:hover {
+  color: var(--p-primary-200);
+}
+
+:host-context(.app-dark) .footer-social-link {
+  color: var(--p-primary-300);
+  background: color-mix(in srgb, var(--p-primary-300) 16%, transparent);
+}
+
+:host-context(.app-dark) .footer-social-link:hover {
+  color: var(--p-primary-100);
+  background: color-mix(in srgb, var(--p-primary-200) 24%, transparent);
+}
+
+@media (min-width: 768px) {
+  .footer-toggle {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .footer-visible {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-extra-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-toggle,
+  .footer-link,
+  .footer-extra,
+  .footer-social-link {
+    transition: none;
+  }
+}
