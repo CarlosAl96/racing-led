@@ -1,1 +1,77 @@
-<p>auth works!</p>
+<section class="admin-auth px-3 py-4 md:px-4 md:py-5">
+  <div class="admin-auth__grid">
+    <article class="admin-auth__hero">
+      <p class="admin-auth__overline m-0">Panel exclusivo</p>
+      <h1 class="admin-auth__title m-0">Acceso administrador</h1>
+      <p class="admin-auth__description m-0">
+        Inicia sesion con tu cuenta admin para gestionar productos y mantener el catalogo
+        actualizado.
+      </p>
+
+      <ul class="admin-auth__features m-0 p-0" aria-label="Beneficios del panel admin">
+        <li>
+          <i class="pi pi-bolt" aria-hidden="true"></i>
+          Publicacion y actualizacion de inventario en tiempo real.
+        </li>
+        <li>
+          <i class="pi pi-shield" aria-hidden="true"></i>
+          Validacion de acceso por permisos de administrador.
+        </li>
+        <li>
+          <i class="pi pi-chart-line" aria-hidden="true"></i>
+          Flujo optimizado para operacion diaria del negocio.
+        </li>
+      </ul>
+    </article>
+
+    <article class="admin-auth__card" aria-label="Formulario de inicio de sesion">
+      <form class="admin-auth__form" [formGroup]="form" (ngSubmit)="login()">
+        <div class="admin-auth__heading">
+          <h2 class="m-0">Iniciar sesion</h2>
+          <p class="m-0">Solo administradores autorizados.</p>
+        </div>
+
+        <div class="admin-auth__field">
+          <label for="admin-email">Correo</label>
+          <input
+            id="admin-email"
+            pInputText
+            type="email"
+            autocomplete="email"
+            formControlName="email"
+            placeholder="admin@dominio.com"
+            [class.p-invalid]="hasError('email')"
+          />
+          @if (hasError('email')) {
+            <small class="p-error">Ingresa un correo valido.</small>
+          }
+        </div>
+
+        <div class="admin-auth__field">
+          <label for="admin-password">Contraseña</label>
+          <p-password
+            inputId="admin-password"
+            formControlName="password"
+            [toggleMask]="true"
+            [feedback]="false"
+            [inputStyleClass]="hasError('password') ? 'p-invalid w-full' : 'w-full'"
+            placeholder="********"
+          ></p-password>
+          @if (hasError('password')) {
+            <small class="p-error">La contraseña debe tener al menos 6 caracteres.</small>
+          }
+        </div>
+
+        <button
+          pButton
+          type="submit"
+          icon="pi pi-sign-in"
+          [label]="isSubmitting() ? 'Validando acceso...' : 'Entrar al panel'"
+          [loading]="isSubmitting()"
+          [disabled]="isSubmitting()"
+          class="w-full"
+        ></button>
+      </form>
+    </article>
+  </div>
+</section>

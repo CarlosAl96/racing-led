@@ -1,1 +1,180 @@
-<p>products works!</p>
+<section class="admin-products px-3 py-4 md:px-4">
+  <div class="admin-products__header">
+    <div>
+      <h2 class="admin-products__title m-0">Listado de productos</h2>
+    </div>
+
+    <button
+      pButton
+      type="button"
+      icon="pi pi-plus"
+      label="Agregar producto"
+      class="admin-products__add"
+    ></button>
+  </div>
+
+  @if (isLoading() && !hasProducts()) {
+    <div class="loading-initial" role="status" aria-live="polite" aria-label="Cargando productos">
+      <div class="loading-parts">
+        <span class="loading-parts-wheel" aria-hidden="true">
+          <i class="pi pi-cog"></i>
+        </span>
+        <span class="loading-parts-text">Cargando inventario...</span>
+      </div>
+    </div>
+  } @else {
+    <p-table
+      [value]="products()"
+      [lazy]="true"
+      [paginator]="true"
+      [pageLinks]="3"
+      [rows]="rows"
+      [first]="first()"
+      [totalRecords]="totalRecords()"
+      [loading]="isLoading()"
+      [rowHover]="true"
+      class="admin-products-table"
+      (onLazyLoad)="onLazyLoad($event)"
+    >
+      <ng-template #caption>
+        <div class="table-caption">
+          <form class="catalog-toolbar" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+            <div class="catalog-toolbar__field catalog-toolbar__field--search">
+              <label class="catalog-toolbar__label" for="admin-product-search"
+                >Buscar repuesto</label
+              >
+              <input
+                id="admin-product-search"
+                pInputText
+                type="search"
+                formControlName="search"
+                class="catalog-toolbar__input"
+                placeholder="Nombre, SKU o palabra clave"
+              />
+            </div>
+
+            <div class="catalog-toolbar__field catalog-toolbar__field--category">
+              <label class="catalog-toolbar__label" for="admin-product-category">Categoría</label>
+              <p-select
+                inputId="admin-product-category"
+                formControlName="category"
+                [options]="categoryOptions()"
+                optionLabel="label"
+                optionValue="value"
+                [loading]="isLoadingCategories()"
+                placeholder="Todas las categorías"
+                class="catalog-toolbar__select"
+              ></p-select>
+            </div>
+
+            <div class="catalog-toolbar__actions">
+              <button pButton type="submit" icon="pi pi-search" label="Buscar"></button>
+
+              @if (hasActiveFilters()) {
+                <button
+                  pButton
+                  type="button"
+                  severity="secondary"
+                  variant="outlined"
+                  label="Limpiar"
+                  (click)="clearFilters()"
+                ></button>
+              }
+            </div>
+          </form>
+
+          <div class="catalog-meta pb-2">
+            <span>{{ totalRecords() }} productos registrados</span>
+
+            @if (hasActiveFilters()) {
+              <span>Filtros activos</span>
+            }
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template #header>
+        <tr>
+          <th class="image-column">Imagen</th>
+          <th>SKU</th>
+          <th>Nombre</th>
+          <th>Categoría</th>
+          <th>Precio</th>
+          <th class="actions-column">Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template #body let-product>
+        <tr>
+          <td class="image-column">
+            <span class="p-column-title">Imagen</span>
+            <div class="product-thumbnail-frame">
+              <img
+                [src]="resolveImage(product.url_image)"
+                [alt]="product.name"
+                class="product-thumbnail"
+                loading="lazy"
+                (error)="onImageError($event)"
+              />
+            </div>
+          </td>
+          <td>
+            <span class="p-column-title">SKU</span>
+            <span class="cell-muted">{{ product.sku }}</span>
+          </td>
+          <td>
+            <span class="p-column-title">Nombre</span>
+            <div class="product-main-cell">
+              <span class="product-main-cell__name">{{ product.name }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="p-column-title">Categoría</span>
+            <span class="cell-muted">{{ product.category || 'Sin categoría' }}</span>
+          </td>
+          <td>
+            <span class="p-column-title">Precio</span>
+            <span class="product-price">$ {{ product.price | number: '1.0-2' }}</span>
+          </td>
+          <td class="actions-column">
+            <span class="p-column-title">Acciones</span>
+            <div class="row-actions">
+              <button
+                pButton
+                type="button"
+                icon="pi pi-pencil"
+                [rounded]="true"
+                [text]="true"
+                severity="secondary"
+                aria-label="Editar producto"
+              ></button>
+              <button
+                pButton
+                type="button"
+                icon="pi pi-trash"
+                [rounded]="true"
+                [text]="true"
+                severity="danger"
+                aria-label="Eliminar producto"
+              ></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="6">
+            <div class="empty-state text-center py-6">
+              {{
+                hasActiveFilters()
+                  ? 'No hay productos para esta búsqueda.'
+                  : 'No hay productos registrados.'
+              }}
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+</section>

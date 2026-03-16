@@ -3,7 +3,11 @@
     <app-header></app-header>
   </div>
 
-  <main class="catalog-content" aria-label="Contenido del catalogo">
+  <main
+    class="catalog-content"
+    [style.--catalog-header-offset.px]="headerHeight()"
+    aria-label="Contenido del catalogo"
+  >
     <router-outlet></router-outlet>
   </main>
 

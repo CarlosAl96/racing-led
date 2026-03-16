@@ -1,47 +1,4 @@
 <section class="product-list-wrapper px-3 py-4 md:px-4">
-  <form class="catalog-toolbar" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
-    <div class="catalog-toolbar__field catalog-toolbar__field--search">
-      <label class="catalog-toolbar__label" for="product-search">Buscar repuesto</label>
-      <input
-        id="product-search"
-        pInputText
-        type="search"
-        formControlName="search"
-        class="catalog-toolbar__input"
-        placeholder="Nombre, SKU o palabra clave"
-      />
-    </div>
-
-    <div class="catalog-toolbar__field catalog-toolbar__field--category">
-      <label class="catalog-toolbar__label" for="product-category">Categoría</label>
-      <p-select
-        inputId="product-category"
-        formControlName="category"
-        [options]="categoryOptions()"
-        optionLabel="label"
-        optionValue="value"
-        [loading]="isLoadingCategories()"
-        placeholder="Todas las categorías"
-        class="catalog-toolbar__select"
-      ></p-select>
-    </div>
-
-    <div class="catalog-toolbar__actions">
-      <button pButton type="submit" icon="pi pi-search" label="Buscar"></button>
-
-      @if (hasActiveFilters()) {
-        <button
-          pButton
-          type="button"
-          severity="secondary"
-          variant="outlined"
-          label="Limpiar"
-          (click)="clearFilters()"
-        ></button>
-      }
-    </div>
-  </form>
-
   @if (isLoading()) {
     <div class="loading-initial" role="status" aria-live="polite" aria-label="Cargando repuestos">
       <div class="loading-parts">
@@ -52,93 +9,138 @@
       </div>
     </div>
   } @else {
-    <div class="catalog-results" [class.catalog-results--with-cart]="isDesktopCartVisible()">
-      <div class="catalog-results__products">
-        <div class="catalog-meta">
-          <span>{{ totalRecords() }} repuestos disponibles</span>
+    <div class="catalog-layout" [class.catalog-layout--with-cart]="isDesktopCartVisible()">
+      <div class="catalog-layout__main">
+        <form class="catalog-toolbar" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+          <div class="catalog-toolbar__field catalog-toolbar__field--search">
+            <label class="catalog-toolbar__label" for="product-search">Buscar repuesto</label>
+            <input
+              id="product-search"
+              pInputText
+              type="search"
+              formControlName="search"
+              class="catalog-toolbar__input"
+              placeholder="Nombre, SKU o palabra clave"
+            />
+          </div>
 
-          @if (hasActiveFilters()) {
-            <span>Filtros activos</span>
-          }
-        </div>
+          <div class="catalog-toolbar__field catalog-toolbar__field--category">
+            <label class="catalog-toolbar__label" for="product-category">Categoría</label>
+            <p-select
+              inputId="product-category"
+              formControlName="category"
+              [options]="categoryOptions()"
+              optionLabel="label"
+              optionValue="value"
+              [loading]="isLoadingCategories()"
+              placeholder="Todas las categorías"
+              class="catalog-toolbar__select"
+            ></p-select>
+          </div>
 
-        @if (hasProducts()) {
-          <div class="products-grid">
-            @for (product of products(); track product.id) {
-              <article class="product-card">
-                <div
-                  class="product-image-wrap"
-                  tabindex="0"
-                  role="button"
-                  [attr.aria-label]="'Ver imagen ampliada de ' + product.name"
-                  (click)="openImagePreview(resolveImage(product.url_image), product.name)"
-                  (keydown.enter)="openImagePreview(resolveImage(product.url_image), product.name)"
-                  (keydown.space)="openImagePreview(resolveImage(product.url_image), product.name)"
-                >
-                  <img
-                    [src]="resolveImage(product.url_image)"
-                    [alt]="product.name"
-                    class="product-image"
-                    loading="lazy"
-                    (error)="onImageError($event)"
-                  />
-                </div>
+          <div class="catalog-toolbar__actions">
+            <button pButton type="submit" icon="pi pi-search" label="Buscar"></button>
 
-                <div class="product-content">
-                  <p class="product-sku m-0">SKU: {{ product.sku }}</p>
-                  <h3 class="product-name m-0">{{ product.name }}</h3>
-                  <p class="product-category m-0">{{ product.category || 'Sin categoría' }}</p>
-                  <p class="product-price m-0">
-                    @if (resolvePriceBs(product.price); as priceBs) {
-                      Bs {{ priceBs | number: '1.0-2' }}
-                    } @else {
-                      Bs --
-                    }
-                  </p>
-                </div>
-
-                <button
-                  pButton
-                  type="button"
-                  label="Cotizar"
-                  icon="pi pi-shopping-cart"
-                  class="w-full add-cart-button"
-                  (click)="addToQuote(product)"
-                ></button>
-              </article>
+            @if (hasActiveFilters()) {
+              <button
+                pButton
+                type="button"
+                severity="secondary"
+                variant="outlined"
+                label="Limpiar"
+                (click)="clearFilters()"
+              ></button>
             }
           </div>
-        } @else {
-          <div class="text-center py-8">
-            {{ hasActiveFilters() ? 'No hay productos para esta búsqueda.' : 'No hay productos disponibles.' }}
-          </div>
-        }
+        </form>
 
-        <div class="infinite-scroll-state mt-4">
-          @if (isLoadingMore()) {
-            <div
-              class="loading-parts loading-parts-more"
-              role="status"
-              aria-live="polite"
-              aria-label="Cargando repuestos"
-            >
-              <span class="loading-parts-wheel" aria-hidden="true">
-                <i class="pi pi-cog"></i>
-              </span>
-              <span class="loading-parts-text">Buscando repuestos...</span>
+        <div class="catalog-results__products">
+          <div class="catalog-meta">
+            <span>{{ totalRecords() }} repuestos disponibles</span>
+
+            @if (hasActiveFilters()) {
+              <span>Filtros activos</span>
+            }
+          </div>
+
+          @if (hasProducts()) {
+            <div class="products-grid">
+              @for (product of products(); track product.id) {
+                <article class="product-card">
+                  <div
+                    class="product-image-wrap"
+                    tabindex="0"
+                    role="button"
+                    [attr.aria-label]="'Ver imagen ampliada de ' + product.name"
+                    (click)="openImagePreview(resolveImage(product.url_image), product.name)"
+                    (keydown.enter)="openImagePreview(resolveImage(product.url_image), product.name)"
+                    (keydown.space)="openImagePreview(resolveImage(product.url_image), product.name)"
+                  >
+                    <img
+                      [src]="resolveImage(product.url_image)"
+                      [alt]="product.name"
+                      class="product-image"
+                      loading="lazy"
+                      (error)="onImageError($event)"
+                    />
+                  </div>
+
+                  <div class="product-content">
+                    <p class="product-sku m-0">SKU: {{ product.sku }}</p>
+                    <h3 class="product-name m-0">{{ product.name }}</h3>
+                    <p class="product-category m-0">{{ product.category || 'Sin categoría' }}</p>
+                    <p class="product-price m-0">
+                      @if (resolvePriceBs(product.price); as priceBs) {
+                        Bs {{ priceBs | number: '1.0-2' }}
+                      } @else {
+                        Bs --
+                      }
+                    </p>
+                  </div>
+
+                  <button
+                    pButton
+                    type="button"
+                    label="Cotizar"
+                    icon="pi pi-shopping-cart"
+                    class="w-full add-cart-button"
+                    (click)="addToQuote(product)"
+                  ></button>
+                </article>
+              }
+            </div>
+          } @else {
+            <div class="text-center py-8">
+              {{ hasActiveFilters() ? 'No hay productos para esta búsqueda.' : 'No hay productos disponibles.' }}
             </div>
           }
 
-          @if (!hasMore() && hasProducts()) {
-            <div class="text-center py-3">Has llegado al final del catálogo.</div>
-          }
+          <div class="infinite-scroll-state mt-4">
+            @if (isLoadingMore()) {
+              <div
+                class="loading-parts loading-parts-more"
+                role="status"
+                aria-live="polite"
+                aria-label="Cargando repuestos"
+              >
+                <span class="loading-parts-wheel" aria-hidden="true">
+                  <i class="pi pi-cog"></i>
+                </span>
+                <span class="loading-parts-text">Buscando repuestos...</span>
+              </div>
+            }
 
-          <div #infiniteTrigger class="infinite-trigger" aria-hidden="true"></div>
+            @if (!hasMore() && hasProducts()) {
+              <div class="text-center py-3">Has llegado al final del catálogo.</div>
+            }
+
+            <div #infiniteTrigger class="infinite-trigger" aria-hidden="true"></div>
+          </div>
         </div>
       </div>
 
       @if (isDesktopCartVisible()) {
-        <app-shopping-cart mode="desktop" class="catalog-results__cart"></app-shopping-cart>
+        <app-shopping-cart mode="desktop" class="catalog-layout__cart"></app-shopping-cart>
       }
     </div>
   }
