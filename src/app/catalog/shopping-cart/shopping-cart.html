@@ -122,36 +122,34 @@
   </section>
 </ng-template>
 
-@if (isVisible()) {
-  <p-drawer
-    [position]="drawerPosition()"
-    [visible]="isVisible()"
-    [appendTo]="'body'"
-    [dismissible]="true"
-    [modal]="isDrawerModal()"
-    [blockScroll]="shouldBlockScroll()"
-    [closable]="false"
-    [style]="drawerStyle()"
-    [maskStyle]="drawerMaskStyle()"
-    [class]="drawerClass()"
-    (visibleChange)="onDrawerVisibilityChange($event)"
-  >
-    <ng-template #header>
-      <div class="cart-drawer-header">
-        <h2 class="cart-title m-0">Tu selección</h2>
-        <button
-          pButton
-          type="button"
-          icon="pi pi-times"
-          [rounded]="true"
-          [text]="true"
-          class="cart-close-button"
-          aria-label="Cerrar carrito de cotización"
-          (click)="closeCart()"
-        ></button>
-      </div>
-    </ng-template>
+<p-drawer
+  [position]="drawerPosition()"
+  [visible]="isVisible()"
+  [appendTo]="'body'"
+  [dismissible]="true"
+  [modal]="isDrawerModal()"
+  [blockScroll]="shouldBlockScroll()"
+  [closable]="false"
+  [style]="drawerStyle()"
+  [maskStyle]="drawerMaskStyle()"
+  [class]="drawerClass()"
+  (visibleChange)="onDrawerVisibilityChange($event)"
+>
+  <ng-template #header>
+    <div class="cart-drawer-header">
+      <h2 class="cart-title m-0">Tu selección</h2>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-times"
+        [rounded]="true"
+        [text]="true"
+        class="cart-close-button"
+        aria-label="Cerrar carrito de cotización"
+        (click)="closeCart()"
+      ></button>
+    </div>
+  </ng-template>
 
-    <ng-container [ngTemplateOutlet]="cartContent"></ng-container>
-  </p-drawer>
-}
+  <ng-container [ngTemplateOutlet]="cartContent"></ng-container>
+</p-drawer>

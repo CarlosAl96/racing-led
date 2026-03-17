@@ -94,11 +94,6 @@ export class ProductList implements OnInit, OnDestroy {
       value: category,
     })),
   ]);
-  protected readonly isDesktopCartVisible = computed(
-    () =>
-      !this.isMobile() && this.quoteCartService.hasItems() && this.quoteCartService.isDesktopOpen(),
-  );
-
   ngOnInit(): void {
     this.syncViewportMode();
     this.loadCategories();
