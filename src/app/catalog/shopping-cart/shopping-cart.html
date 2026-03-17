@@ -1,22 +1,5 @@
 <ng-template #cartContent>
   <section class="cart-shell" aria-label="Carrito de cotización">
-    <div class="cart-panel-header">
-      <div>
-        <h2 class="cart-title m-0">Tu selección</h2>
-      </div>
-
-      <button
-        pButton
-        type="button"
-        icon="pi pi-times"
-        [rounded]="true"
-        [text]="true"
-        class="cart-close-button"
-        aria-label="Cerrar carrito de cotización"
-        (click)="closeCart()"
-      ></button>
-    </div>
-
     @if (hasItems()) {
       <div class="cart-items" role="list">
         @for (item of items(); track item.product.id) {
@@ -139,26 +122,36 @@
   </section>
 </ng-template>
 
-@if (mode() === 'desktop') {
-  @if (isVisible()) {
-    <aside class="shopping-cart-panel">
-      <ng-container [ngTemplateOutlet]="cartContent"></ng-container>
-    </aside>
-  }
-} @else {
+@if (isVisible()) {
   <p-drawer
-    position="bottom"
+    [position]="drawerPosition()"
     [visible]="isVisible()"
     [appendTo]="'body'"
     [dismissible]="true"
-    [modal]="true"
-    [blockScroll]="true"
+    [modal]="isDrawerModal()"
+    [blockScroll]="shouldBlockScroll()"
     [closable]="false"
     [style]="drawerStyle()"
     [maskStyle]="drawerMaskStyle()"
-    styleClass="shopping-cart-mobile-drawer"
-    (visibleChange)="onMobileVisibilityChange($event)"
+    [class]="drawerClass()"
+    (visibleChange)="onDrawerVisibilityChange($event)"
   >
+    <ng-template #header>
+      <div class="cart-drawer-header">
+        <h2 class="cart-title m-0">Tu selección</h2>
+        <button
+          pButton
+          type="button"
+          icon="pi pi-times"
+          [rounded]="true"
+          [text]="true"
+          class="cart-close-button"
+          aria-label="Cerrar carrito de cotización"
+          (click)="closeCart()"
+        ></button>
+      </div>
+    </ng-template>
+
     <ng-container [ngTemplateOutlet]="cartContent"></ng-container>
   </p-drawer>
 }

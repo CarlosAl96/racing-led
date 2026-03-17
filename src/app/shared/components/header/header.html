@@ -1,5 +1,5 @@
 <header class="header-shell px-3 py-2 md:px-2 md:py-2">
-  <div class="flex align-items-center justify-content-between gap-3">
+  <div class="flex align-items-center justify-content-between gap-3 pr-4">
     <div class="flex align-items-center gap-3 min-w-0">
       <img
         src="assets/logo.png"
@@ -17,7 +17,7 @@
       class="cart-button-wrap p-overlay-badge"
       pBadge
       [value]="cartCount()"
-      severity="danger"
+      severity="secondary"
       [badgeDisabled]="cartCount() === 0"
     >
       <button

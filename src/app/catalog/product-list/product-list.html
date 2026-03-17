@@ -9,7 +9,7 @@
       </div>
     </div>
   } @else {
-    <div class="catalog-layout" [class.catalog-layout--with-cart]="isDesktopCartVisible()">
+    <div class="catalog-layout">
       <div class="catalog-layout__main">
         <form class="catalog-toolbar" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
           <div class="catalog-toolbar__field catalog-toolbar__field--search">

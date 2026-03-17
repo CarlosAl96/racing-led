@@ -44,15 +44,34 @@ export class ShoppingCart implements OnInit {
     return rate === null ? null : this.totalAmountUsd() * rate;
   });
   protected readonly drawerStyle = computed(() => {
+    if (this.mode() === 'desktop') {
+      return {
+        width: 'clamp(23rem, 28vw, 30rem)',
+        'max-width': 'calc(100vw - 1rem)',
+      };
+    }
+
     const offset = Math.max(this.headerOffset(), 0);
 
     return {
       height: `calc(100dvh - ${offset}px)`,
       'max-height': `calc(100dvh - ${offset}px)`,
-      width: 'min(100vw, 28rem)',
+      width: '100vw',
     };
   });
+  protected readonly drawerPosition = computed<'right' | 'bottom'>(() =>
+    this.mode() === 'desktop' ? 'right' : 'bottom',
+  );
+  protected readonly drawerClass = computed(() =>
+    this.mode() === 'desktop' ? 'shopping-cart-desktop-drawer' : 'shopping-cart-mobile-drawer',
+  );
+  protected readonly isDrawerModal = computed(() => this.mode() !== 'desktop');
+  protected readonly shouldBlockScroll = computed(() => this.mode() !== 'desktop');
   protected readonly drawerMaskStyle = computed(() => {
+    if (this.mode() === 'desktop') {
+      return {};
+    }
+
     const offset = Math.max(this.headerOffset(), 0);
 
     return {
@@ -74,7 +93,15 @@ export class ShoppingCart implements OnInit {
     this.quoteCartService.closeMobile();
   }
 
-  protected onMobileVisibilityChange(isOpen: boolean): void {
+  protected onDrawerVisibilityChange(isOpen: boolean): void {
+    if (this.mode() === 'desktop') {
+      if (!isOpen) {
+        this.quoteCartService.closeDesktop();
+      }
+
+      return;
+    }
+
     this.quoteCartService.setMobileOpen(isOpen);
   }
 
@@ -171,12 +198,14 @@ export class ShoppingCart implements OnInit {
       'Quedo atento a su respuesta. Gracias.',
     ];
 
-    return messageSections.filter((section, index, sections) => {
-      if (section !== '') {
-        return true;
-      }
+    return messageSections
+      .filter((section, index, sections) => {
+        if (section !== '') {
+          return true;
+        }
 
-      return sections[index - 1] !== '' && sections[index + 1] !== '';
-    }).join('\n');
+        return sections[index - 1] !== '' && sections[index + 1] !== '';
+      })
+      .join('\n');
   }
 }
