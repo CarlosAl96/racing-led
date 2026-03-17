@@ -7,7 +7,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { finalize, Subscription } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
@@ -15,6 +15,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { Product } from '../../core/models/product';
+import { DolarAPIService } from '../../core/services/dolar-api.service';
 import { ProductsService } from '../../core/services/products.service';
 
 interface CategoryOption {
@@ -31,6 +32,7 @@ interface ProductsTablePageEvent {
   selector: 'app-products',
   imports: [
     ButtonModule,
+    DatePipe,
     DecimalPipe,
     InputTextModule,
     ReactiveFormsModule,
@@ -43,6 +45,7 @@ interface ProductsTablePageEvent {
 })
 export class Products implements OnInit, OnDestroy {
   private readonly productsService = inject(ProductsService);
+  private readonly dolarApiService = inject(DolarAPIService);
   private productsRequestSubscription?: Subscription;
 
   protected readonly rows = 20;
@@ -56,6 +59,7 @@ export class Products implements OnInit, OnDestroy {
   protected readonly products = signal<Product[]>([]);
   protected readonly categories = signal<string[]>([]);
   protected readonly totalRecords = signal(0);
+  protected readonly exchangeRate = signal<number | null>(null);
   protected readonly isLoading = signal(false);
   protected readonly isLoadingCategories = signal(false);
   protected readonly first = signal(0);
@@ -75,6 +79,7 @@ export class Products implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadCategories();
+    this.loadExchangeRate();
   }
 
   ngOnDestroy(): void {
@@ -121,6 +126,11 @@ export class Products implements OnInit, OnDestroy {
     image.src = this.fallbackImage;
   }
 
+  protected resolvePriceBs(priceUsd: number): number | null {
+    const rate = this.exchangeRate();
+    return rate === null ? null : priceUsd * rate;
+  }
+
   private loadProducts(page: number): void {
     this.productsRequestSubscription?.unsubscribe();
     this.isLoading.set(true);
@@ -145,6 +155,17 @@ export class Products implements OnInit, OnDestroy {
           this.first.set(0);
         },
       });
+  }
+
+  private loadExchangeRate(): void {
+    this.dolarApiService.getOfficialRate().subscribe({
+      next: (response) => {
+        this.exchangeRate.set(response.promedio ?? null);
+      },
+      error: () => {
+        this.exchangeRate.set(null);
+      },
+    });
   }
 
   private loadCategories(): void {

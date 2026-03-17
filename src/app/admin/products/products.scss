@@ -79,6 +79,10 @@
   font-size: 0.9rem;
 }
 
+.index-column {
+  width: 4rem;
+}
+
 .image-column {
   width: 7rem;
 }
@@ -121,6 +125,16 @@
 .product-price {
   color: var(--p-primary-600);
   font-weight: 700;
+}
+
+.product-price-wrap {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.product-price-bs {
+  color: var(--p-text-muted-color);
+  font-size: 0.84rem;
 }
 
 .row-actions {
@@ -309,6 +323,7 @@
 
   .cell-muted,
   .product-price,
+  .product-price-bs,
   .product-main-cell__name {
     line-height: 1.2;
   }

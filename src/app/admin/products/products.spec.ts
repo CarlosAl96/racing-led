@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 
 import { Products } from './products';
+import { DolarAPIService } from '../../core/services/dolar-api.service';
 import { ProductsService } from '../../core/services/products.service';
 
 describe('Products', () => {
@@ -26,6 +27,20 @@ describe('Products', () => {
                 },
               }),
             getCategories: () => of({ data: [] }),
+          },
+        },
+        {
+          provide: DolarAPIService,
+          useValue: {
+            getOfficialRate: () =>
+              of({
+                fuente: 'BCV',
+                nombre: 'Oficial',
+                compra: null,
+                venta: null,
+                promedio: null,
+                fechaActualizacion: '',
+              }),
           },
         },
       ],

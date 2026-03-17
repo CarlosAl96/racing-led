@@ -24,7 +24,7 @@ import { QuoteCartService } from '../../core/services/quote-cart.service';
 export class ShoppingCart implements OnInit {
   private readonly quoteCartService = inject(QuoteCartService);
   private readonly dolarApiService = inject(DolarAPIService);
-  private readonly whatsappPhone = '+584147580181';
+  private readonly whatsappPhone = '+584247027005';
 
   readonly mode = input<'desktop' | 'mobile'>('desktop');
   readonly headerOffset = input(0);

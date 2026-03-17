@@ -95,17 +95,24 @@
 
       <ng-template #header>
         <tr>
+          <th class="index-column">#</th>
           <th class="image-column">Imagen</th>
           <th>SKU</th>
           <th>Nombre</th>
           <th>Categoría</th>
           <th>Precio</th>
+          <th>Creado</th>
+          <th>Actualizado</th>
           <th class="actions-column">Acciones</th>
         </tr>
       </ng-template>
 
-      <ng-template #body let-product>
+      <ng-template #body let-product let-rowIndex="rowIndex">
         <tr>
+          <td class="index-column">
+            <span class="p-column-title">#</span>
+            <span class="cell-muted">{{ first() + rowIndex + 1 }}</span>
+          </td>
           <td class="image-column">
             <span class="p-column-title">Imagen</span>
             <div class="product-thumbnail-frame">
@@ -134,7 +141,24 @@
           </td>
           <td>
             <span class="p-column-title">Precio</span>
-            <span class="product-price">$ {{ product.price | number: '1.0-2' }}</span>
+            <div class="product-price-wrap">
+              <span class="product-price">$ {{ product.price | number: '1.0-2' }}</span>
+              <span class="product-price-bs">
+                @if (resolvePriceBs(product.price); as priceBs) {
+                  Bs {{ priceBs | number: '1.0-2' }}
+                } @else {
+                  Bs --
+                }
+              </span>
+            </div>
+          </td>
+          <td>
+            <span class="p-column-title">Creado</span>
+            <span class="cell-muted">{{ product.created_at | date: 'dd/MM/yyyy HH:mm' }}</span>
+          </td>
+          <td>
+            <span class="p-column-title">Actualizado</span>
+            <span class="cell-muted">{{ product.updated_at | date: 'dd/MM/yyyy HH:mm' }}</span>
           </td>
           <td class="actions-column">
             <span class="p-column-title">Acciones</span>
@@ -164,7 +188,7 @@
 
       <ng-template #emptymessage>
         <tr>
-          <td colspan="6">
+          <td colspan="9">
             <div class="empty-state text-center py-6">
               {{
                 hasActiveFilters()

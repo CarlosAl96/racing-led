@@ -1,34 +1,18 @@
 <section class="admin-auth px-3 py-4 md:px-4 md:py-5">
-  <div class="admin-auth__grid">
-    <article class="admin-auth__hero">
-      <p class="admin-auth__overline m-0">Panel exclusivo</p>
-      <h1 class="admin-auth__title m-0">Acceso administrador</h1>
-      <p class="admin-auth__description m-0">
-        Inicia sesion con tu cuenta admin para gestionar productos y mantener el catalogo
-        actualizado.
+  <div class="admin-auth__panel" aria-label="Acceso al panel administrador">
+    <article class="admin-auth__intro" aria-hidden="true">
+      <p class="admin-auth__kicker m-0">Acceso seguro</p>
+      <h1 class="admin-auth__title m-0">Panel de administracion</h1>
+      <p class="admin-auth__copy m-0">
+        Gestiona inventario y operaciones del negocio desde una sola vista.
       </p>
-
-      <ul class="admin-auth__features m-0 p-0" aria-label="Beneficios del panel admin">
-        <li>
-          <i class="pi pi-bolt" aria-hidden="true"></i>
-          Publicacion y actualizacion de inventario en tiempo real.
-        </li>
-        <li>
-          <i class="pi pi-shield" aria-hidden="true"></i>
-          Validacion de acceso por permisos de administrador.
-        </li>
-        <li>
-          <i class="pi pi-chart-line" aria-hidden="true"></i>
-          Flujo optimizado para operacion diaria del negocio.
-        </li>
-      </ul>
     </article>
 
     <article class="admin-auth__card" aria-label="Formulario de inicio de sesion">
       <form class="admin-auth__form" [formGroup]="form" (ngSubmit)="login()">
         <div class="admin-auth__heading">
           <h2 class="m-0">Iniciar sesion</h2>
-          <p class="m-0">Solo administradores autorizados.</p>
+          <p class="m-0">Ingresa con tu cuenta para continuar.</p>
         </div>
 
         <div class="admin-auth__field">
@@ -48,7 +32,7 @@
         </div>
 
         <div class="admin-auth__field">
-          <label for="admin-password">Contraseña</label>
+          <label for="admin-password">Contrasena</label>
           <p-password
             inputId="admin-password"
             formControlName="password"
@@ -58,7 +42,7 @@
             placeholder="********"
           ></p-password>
           @if (hasError('password')) {
-            <small class="p-error">La contraseña debe tener al menos 6 caracteres.</small>
+            <small class="p-error">La contrasena debe tener al menos 6 caracteres.</small>
           }
         </div>
 
