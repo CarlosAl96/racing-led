@@ -1,4 +1,6 @@
 <section class="admin-products px-3 py-4 md:px-4">
+  <p-confirmdialog></p-confirmdialog>
+
   <div class="admin-products__header">
     <div>
       <h2 class="admin-products__title m-0">Listado de productos</h2>
@@ -10,6 +12,7 @@
       icon="pi pi-plus"
       label="Agregar producto"
       class="admin-products__add"
+      (click)="openProductModal()"
     ></button>
   </div>
 
@@ -117,7 +120,7 @@
             <span class="p-column-title">Imagen</span>
             <div class="product-thumbnail-frame">
               <img
-                [src]="resolveImage(product.url_image)"
+                [src]="resolveImage(product.picture)"
                 [alt]="product.name"
                 class="product-thumbnail"
                 loading="lazy"
@@ -171,6 +174,7 @@
                 [text]="true"
                 severity="secondary"
                 aria-label="Editar producto"
+                (click)="openProductModal(product)"
               ></button>
               <button
                 pButton
@@ -180,6 +184,9 @@
                 [text]="true"
                 severity="danger"
                 aria-label="Eliminar producto"
+                [loading]="deletingProductId() === product.id"
+                [disabled]="deletingProductId() === product.id"
+                (click)="confirmDeleteProduct(product)"
               ></button>
             </div>
           </td>

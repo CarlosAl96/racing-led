@@ -158,7 +158,7 @@ export class ShoppingCart implements OnInit {
   }
 
   private loadExchangeRate(): void {
-    this.dolarApiService.getOfficialRate().subscribe({
+    this.dolarApiService.getParallelRate().subscribe({
       next: (response) => {
         this.exchangeRate.set(response.promedio ?? null);
       },

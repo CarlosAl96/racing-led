@@ -16,14 +16,17 @@ export class AdminAuthService {
 
   private readonly supabase = createClient(this.supabaseUrl, this.supabaseAnonKey);
   private readonly currentUser = signal<User | null>(null);
+  private readonly accessToken = signal<string | null>(null);
   private readonly isSessionChecked = signal(false);
 
   readonly adminUser = computed(() => this.currentUser());
+  readonly adminAccessToken = computed(() => this.accessToken());
   readonly isAdminAuthenticated = computed(() => !!this.currentUser());
 
   constructor() {
     this.supabase.auth.onAuthStateChange((_event, session) => {
       this.currentUser.set(session?.user ?? null);
+      this.accessToken.set(session?.access_token ?? null);
       this.isSessionChecked.set(true);
     });
   }
@@ -49,6 +52,7 @@ export class AdminAuthService {
     }
 
     this.currentUser.set(data.user ?? null);
+    this.accessToken.set(data.session?.access_token ?? null);
     this.isSessionChecked.set(true);
 
     return { ok: true };
@@ -57,6 +61,7 @@ export class AdminAuthService {
   async signOut(): Promise<void> {
     await this.supabase.auth.signOut();
     this.currentUser.set(null);
+    this.accessToken.set(null);
     this.isSessionChecked.set(true);
   }
 
@@ -69,17 +74,20 @@ export class AdminAuthService {
 
     if (error) {
       this.currentUser.set(null);
+      this.accessToken.set(null);
       this.isSessionChecked.set(true);
       return false;
     }
 
     if (!data.session?.user) {
       this.currentUser.set(null);
+      this.accessToken.set(null);
       this.isSessionChecked.set(true);
       return false;
     }
 
     this.currentUser.set(data.session.user);
+    this.accessToken.set(data.session.access_token ?? null);
     this.isSessionChecked.set(true);
 
     return true;

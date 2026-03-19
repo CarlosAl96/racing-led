@@ -1,0 +1,137 @@
+<section class="new-product-modal">
+	<header class="new-product-modal__header">
+		<h3 class="new-product-modal__title">{{ modalTitle() }}</h3>
+		<p class="new-product-modal__subtitle">
+			Completa los datos principales para guardar el producto.
+		</p>
+	</header>
+
+	<form class="new-product-form" [formGroup]="form" (ngSubmit)="saveProduct()">
+		<div class="new-product-form__field">
+			<label for="product-sku">SKU *</label>
+			<input
+				id="product-sku"
+				pInputText
+				type="text"
+				formControlName="sku"
+				autocomplete="off"
+				placeholder="Ej. RL-100"
+			/>
+			@if (isControlInvalid('sku')) {
+				<small class="field-error">El SKU es obligatorio.</small>
+			}
+		</div>
+
+		<div class="new-product-form__field">
+			<label for="product-name">Nombre *</label>
+			<input
+				id="product-name"
+				pInputText
+				type="text"
+				formControlName="name"
+				autocomplete="off"
+				placeholder="Nombre del producto"
+			/>
+			@if (isControlInvalid('name')) {
+				<small class="field-error">El nombre es obligatorio.</small>
+			}
+		</div>
+
+		<div class="new-product-form__field">
+			<label for="product-category">Categoría *</label>
+			<p-select
+				inputId="product-category"
+				formControlName="category"
+				[options]="categories()"
+				[editable]="true"
+				[filter]="true"
+				[loading]="isLoadingCategories()"
+				placeholder="Selecciona o escribe una categoría"
+			></p-select>
+			@if (isControlInvalid('category')) {
+				<small class="field-error">La categoría es obligatoria.</small>
+			}
+		</div>
+
+		<div class="new-product-form__field">
+			<label for="product-price">Precio (USD) *</label>
+			<p-inputnumber
+				inputId="product-price"
+				formControlName="price"
+				mode="decimal"
+				[min]="0"
+				[minFractionDigits]="2"
+				[maxFractionDigits]="2"
+				placeholder="0.00"
+			></p-inputnumber>
+			@if (isControlInvalid('price')) {
+				<small class="field-error">El precio es obligatorio y debe ser mayor o igual a 0.</small>
+			}
+		</div>
+
+		<div class="new-product-form__field">
+			<label>Imagen (opcional)</label>
+			@if (isEditMode() && currentImageUrl(); as previewUrl) {
+				<div class="new-product-form__preview">
+					<img
+						[src]="previewUrl"
+						alt="Imagen actual del producto"
+						class="new-product-form__preview-image"
+						(error)="onPreviewError($event)"
+					/>
+				</div>
+			}
+
+			<div class="new-product-form__upload-row">
+				<p-fileupload
+					mode="basic"
+					chooseLabel="Seleccionar imagen"
+					chooseIcon="pi pi-image"
+					[auto]="false"
+					[customUpload]="true"
+					[multiple]="false"
+					[showUploadButton]="false"
+					[showCancelButton]="false"
+					accept="image/*"
+					maxFileSize="5000000"
+					(onSelect)="onImageSelect($event)"
+				></p-fileupload>
+
+				<button
+					pButton
+					type="button"
+					severity="secondary"
+					variant="outlined"
+					label="Quitar"
+					[disabled]="!selectedImageName()"
+					(click)="clearImageSelection()"
+				></button>
+			</div>
+
+			@if (selectedImageName()) {
+				<small class="field-note">Archivo actual: {{ selectedImageName() }}</small>
+			} @else {
+				<small class="field-note">Puedes guardar sin imagen.</small>
+			}
+		</div>
+
+		<footer class="new-product-form__actions">
+			<button
+				pButton
+				type="button"
+				severity="secondary"
+				variant="outlined"
+				label="Cancelar"
+				[disabled]="isSubmitting()"
+				(click)="cancel()"
+			></button>
+
+			<button
+				pButton
+				type="submit"
+				[label]="submitLabel()"
+				[loading]="isSubmitting()"
+			></button>
+		</footer>
+	</form>
+</section>

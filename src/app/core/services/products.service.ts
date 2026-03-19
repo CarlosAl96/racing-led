@@ -12,9 +12,9 @@ import { ResponsePagination } from '../models/responsePagination';
 export class ProductsService {
   private getProductsUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/dynamic-worker`;
   private getCategoriesUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/bright-worker`;
-  private createProductUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}products/store`;
-  private updateProductUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}products/update/`;
-  private deleteProductUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}products/delete`;
+  private createProductUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/hyper-worker`;
+  private updateProductUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/super-service/`;
+  private deleteProductUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/quick-api/`;
 
   constructor(private http: HttpClient) {}
 
@@ -51,22 +51,11 @@ export class ProductsService {
   }
 
   public updateProduct(form: FormData, id: number): Observable<any> {
-    return this.http
-      .patch<any>(this.updateProductUrl + id, form)
-      .pipe(catchError(this.handleError));
+    return this.http.put<any>(this.updateProductUrl + id, form).pipe(catchError(this.handleError));
   }
 
-  public deleteProduct(id: number, url_image: string): Observable<any> {
-    const query: any = {
-      id: id,
-      url_image: url_image,
-    };
-    const httpParams = new HttpParams().appendAll({ ...query });
-    const options = httpParams
-      ? { params: httpParams, headers: new HttpHeaders() }
-      : { headers: new HttpHeaders() };
-
-    return this.http.delete<any>(this.deleteProductUrl, options).pipe(catchError(this.handleError));
+  public deleteProduct(id: number): Observable<any> {
+    return this.http.delete<any>(this.deleteProductUrl + id).pipe(catchError(this.handleError));
   }
 
   private handleError(error: HttpErrorResponse) {

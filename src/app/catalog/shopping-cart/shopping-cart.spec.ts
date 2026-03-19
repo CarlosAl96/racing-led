@@ -15,10 +15,10 @@ describe('ShoppingCart', () => {
         {
           provide: DolarAPIService,
           useValue: {
-            getOfficialRate: () =>
+            getParallelRate: () =>
               of({
                 fuente: 'mock',
-                nombre: 'oficial',
+                nombre: 'paralelo',
                 compra: null,
                 venta: null,
                 promedio: 36,

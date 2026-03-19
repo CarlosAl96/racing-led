@@ -17,10 +17,17 @@ interface DolarApiOfficialResponse {
 export class DolarAPIService {
   private readonly http = inject(HttpClient);
   private readonly officialRateUrl = 'https://ve.dolarapi.com/v1/dolares/oficial';
+  private readonly parallelRateUrl = 'https://ve.dolarapi.com/v1/dolares/paralelo';
 
   public getOfficialRate(): Observable<DolarApiOfficialResponse> {
     return this.http
       .get<DolarApiOfficialResponse>(this.officialRateUrl)
+      .pipe(catchError(this.handleError));
+  }
+
+  public getParallelRate(): Observable<DolarApiOfficialResponse> {
+    return this.http
+      .get<DolarApiOfficialResponse>(this.parallelRateUrl)
       .pipe(catchError(this.handleError));
   }
 

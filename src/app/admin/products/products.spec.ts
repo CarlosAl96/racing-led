@@ -27,15 +27,16 @@ describe('Products', () => {
                 },
               }),
             getCategories: () => of({ data: [] }),
+            deleteProduct: () => of({}),
           },
         },
         {
           provide: DolarAPIService,
           useValue: {
-            getOfficialRate: () =>
+            getParallelRate: () =>
               of({
                 fuente: 'BCV',
-                nombre: 'Oficial',
+                nombre: 'Paralelo',
                 compra: null,
                 venta: null,
                 promedio: null,

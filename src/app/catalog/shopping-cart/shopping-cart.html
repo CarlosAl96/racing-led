@@ -5,7 +5,7 @@
         @for (item of items(); track item.product.id) {
           <article class="cart-item" role="listitem">
             <img
-              [src]="resolveImage(item.product.url_image)"
+              [src]="resolveImage(item.product.picture)"
               [alt]="item.product.name"
               class="cart-item-image"
               loading="lazy"

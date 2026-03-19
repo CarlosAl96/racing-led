@@ -72,12 +72,12 @@
                     tabindex="0"
                     role="button"
                     [attr.aria-label]="'Ver imagen ampliada de ' + product.name"
-                    (click)="openImagePreview(resolveImage(product.url_image), product.name)"
-                    (keydown.enter)="openImagePreview(resolveImage(product.url_image), product.name)"
-                    (keydown.space)="openImagePreview(resolveImage(product.url_image), product.name)"
+                    (click)="openImagePreview(resolveImage(product.picture), product.name)"
+                    (keydown.enter)="openImagePreview(resolveImage(product.picture), product.name)"
+                    (keydown.space)="openImagePreview(resolveImage(product.picture), product.name)"
                   >
                     <img
-                      [src]="resolveImage(product.url_image)"
+                      [src]="resolveImage(product.picture)"
                       [alt]="product.name"
                       class="product-image"
                       loading="lazy"
@@ -111,7 +111,11 @@
             </div>
           } @else {
             <div class="text-center py-8">
-              {{ hasActiveFilters() ? 'No hay productos para esta búsqueda.' : 'No hay productos disponibles.' }}
+              {{
+                hasActiveFilters()
+                  ? 'No hay productos para esta búsqueda.'
+                  : 'No hay productos disponibles.'
+              }}
             </div>
           }
 

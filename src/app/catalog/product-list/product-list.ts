@@ -28,7 +28,14 @@ interface CategoryOption {
 
 @Component({
   selector: 'app-product-list',
-  imports: [ButtonModule, DecimalPipe, InputTextModule, ReactiveFormsModule, SelectModule, ShoppingCart],
+  imports: [
+    ButtonModule,
+    DecimalPipe,
+    InputTextModule,
+    ReactiveFormsModule,
+    SelectModule,
+    ShoppingCart,
+  ],
   templateUrl: './product-list.html',
   styleUrl: './product-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -180,7 +187,7 @@ export class ProductList implements OnInit, OnDestroy {
   }
 
   private loadExchangeRate(): void {
-    this.dolarApiService.getOfficialRate().subscribe({
+    this.dolarApiService.getParallelRate().subscribe({
       next: (response) => {
         this.exchangeRate.set(response.promedio ?? null);
       },
