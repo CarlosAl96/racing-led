@@ -9,3 +9,48 @@ body {
   margin: 0;
   overflow: hidden;
 }
+
+/* Global toast sizing to avoid overflow on small screens. */
+:root .p-toast {
+  width: min(20rem, 86vw);
+}
+
+:root .p-toast .p-toast-message {
+  margin: 0 0 0.5rem;
+}
+
+:root .p-toast .p-toast-message-content {
+  gap: 0.45rem;
+  padding: 0.55rem 0.65rem;
+}
+
+:root .p-toast .p-toast-summary {
+  font-size: 0.88rem;
+  line-height: 1.2;
+}
+
+:root .p-toast .p-toast-detail {
+  font-size: 0.8rem;
+  line-height: 1.25;
+  margin-top: 0.1rem;
+}
+
+@media (max-width: 767px) {
+  :root .p-toast {
+    left: auto;
+    right: 0.5rem;
+    width: min(17rem, 82vw);
+  }
+
+  :root .p-toast .p-toast-message-content {
+    padding: 0.48rem 0.55rem;
+  }
+
+  :root .p-toast .p-toast-summary {
+    font-size: 0.82rem;
+  }
+
+  :root .p-toast .p-toast-detail {
+    font-size: 0.75rem;
+  }
+}
