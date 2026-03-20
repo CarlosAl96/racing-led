@@ -52,6 +52,7 @@ export class NewProduct implements OnInit, OnDestroy {
   protected readonly isSubmitting = signal(false);
   protected readonly isLoadingCategories = signal(false);
   protected readonly categories = signal<string[]>(this.dialogConfig.data?.categories ?? []);
+  protected readonly hasSelectedNewImage = computed(() => this.selectedImageFile() !== null);
   protected readonly selectedImageName = computed(
     () => this.selectedImageFile()?.name ?? this.form.controls.url_image.value,
   );
@@ -141,9 +142,7 @@ export class NewProduct implements OnInit, OnDestroy {
       },
       error: (error: unknown) => {
         const detail =
-          typeof error === 'string'
-            ? error
-            : 'No se pudo guardar el producto. Intenta nuevamente.';
+          typeof error === 'string' ? error : 'No se pudo guardar el producto. Intenta nuevamente.';
 
         this.toastService.setMessage({
           severity: 'error',

@@ -25,7 +25,7 @@ function isProtectedProductsRequest(method: string, url: string): boolean {
   const pathname = extractPathname(url);
 
   if (normalizedMethod === 'POST' && pathname.endsWith('/functions/v1/hyper-worker')) {
-    return false;
+    return true;
   }
 
   if (normalizedMethod === 'PUT' && pathname.includes('/functions/v1/super-service/')) {
