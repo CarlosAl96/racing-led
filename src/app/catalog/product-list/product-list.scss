@@ -153,8 +153,19 @@
   font-weight: 700;
 }
 
+.product-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
 :host ::ng-deep .add-cart-button {
   justify-content: center;
+}
+
+:host ::ng-deep .add-cart-icon-button {
+  flex: 0 0 auto;
 }
 
 .infinite-scroll-state {
@@ -299,6 +310,54 @@
 
 
 @media (max-width: 767px) {
+  .products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+  }
+
+  .product-card {
+    padding: 0.6rem;
+    gap: 0.55rem;
+    border-radius: var(--p-border-radius-lg);
+  }
+
+  .product-image-wrap {
+    aspect-ratio: 4 / 2.6;
+  }
+
+  .product-content {
+    gap: 0.22rem;
+  }
+
+  .product-sku,
+  .product-category {
+    font-size: 0.72rem;
+    line-height: 1.2;
+  }
+
+  .product-name {
+    font-size: 0.86rem;
+    min-height: 2.05rem;
+    line-height: 1.18;
+  }
+
+  .product-price {
+    font-size: 0.92rem;
+  }
+
+  :host ::ng-deep .add-cart-icon-button .p-button {
+    width: 1.9rem;
+    height: 1.9rem;
+  }
+
+  :host ::ng-deep .add-cart-button {
+    font-size: 0.82rem;
+  }
+
+  :host ::ng-deep .add-cart-button .p-button {
+    padding: 0.45rem 0.55rem;
+  }
+
   .catalog-toolbar__actions > * {
     flex: 1 1 auto;
   }

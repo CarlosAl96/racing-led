@@ -89,23 +89,41 @@
                     <p class="product-sku m-0">CÓDIGO: {{ product.sku }}</p>
                     <h3 class="product-name m-0">{{ product.name }}</h3>
                     <p class="product-category m-0">{{ product.category || 'Sin categoría' }}</p>
-                    <p class="product-price m-0">
-                      @if (resolvePriceBs(product.price); as priceBs) {
-                        Bs {{ priceBs | number: '1.0-2' }}
-                      } @else {
-                        Bs --
+
+                    <div class="product-price-row">
+                      <p class="product-price m-0">
+                        @if (resolvePriceBs(product.price); as priceBs) {
+                          Bs {{ priceBs | number: '1.0-2' }}
+                        } @else {
+                          Bs --
+                        }
+                      </p>
+
+                      @if (isMobile()) {
+                        <button
+                          pButton
+                          type="button"
+                          icon="pi pi-shopping-cart"
+                          [rounded]="true"
+                          [text]="true"
+                          class="add-cart-icon-button"
+                          [attr.aria-label]="'Cotizar ' + product.name"
+                          (click)="addToQuote(product)"
+                        ></button>
                       }
-                    </p>
+                    </div>
                   </div>
 
-                  <button
-                    pButton
-                    type="button"
-                    label="Cotizar"
-                    icon="pi pi-shopping-cart"
-                    class="w-full add-cart-button"
-                    (click)="addToQuote(product)"
-                  ></button>
+                  @if (!isMobile()) {
+                    <button
+                      pButton
+                      type="button"
+                      label="Cotizar"
+                      icon="pi pi-shopping-cart"
+                      class="w-full add-cart-button"
+                      (click)="addToQuote(product)"
+                    ></button>
+                  }
                 </article>
               }
             </div>
