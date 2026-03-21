@@ -37,11 +37,10 @@
       [loading]="isLoading()"
       [rowHover]="true"
       class="admin-products-table"
-      (onLazyLoad)="onLazyLoad($event)"
     >
       <ng-template #caption>
         <div class="table-caption">
-          <form class="catalog-toolbar" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+          <form class="catalog-toolbar" [formGroup]="filtersForm">
             <div class="catalog-toolbar__field catalog-toolbar__field--search">
               <label class="catalog-toolbar__label" for="admin-product-search"
                 >Buscar repuesto</label
@@ -53,6 +52,7 @@
                 formControlName="search"
                 class="catalog-toolbar__input"
                 placeholder="Nombre, SKU o palabra clave"
+                (keydown.enter)="applyFilters()"
               />
             </div>
 
@@ -71,7 +71,7 @@
             </div>
 
             <div class="catalog-toolbar__actions">
-              <button pButton type="submit" icon="pi pi-search" label="Buscar"></button>
+              <button pButton icon="pi pi-search" label="Buscar" (click)="applyFilters()"></button>
 
               @if (hasActiveFilters()) {
                 <button

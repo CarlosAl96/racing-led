@@ -94,6 +94,7 @@ export class Products implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadCategories();
     this.loadExchangeRate();
+    this.loadProducts(this.getCurrentPage());
   }
 
   ngOnDestroy(): void {
@@ -121,13 +122,15 @@ export class Products implements OnInit, OnDestroy {
       return;
     }
 
-    this.dialogCloseSubscription = this.dialogRef.onClose.subscribe((result?: { saved?: boolean }) => {
-      if (!result?.saved) {
-        return;
-      }
+    this.dialogCloseSubscription = this.dialogRef.onClose.subscribe(
+      (result?: { saved?: boolean }) => {
+        if (!result?.saved) {
+          return;
+        }
 
-      this.loadProducts(this.getCurrentPage());
-    });
+        this.loadProducts(this.getCurrentPage());
+      },
+    );
   }
 
   protected applyFilters(): void {
@@ -146,15 +149,6 @@ export class Products implements OnInit, OnDestroy {
     this.appliedCategory.set('');
     this.first.set(0);
     this.loadProducts(1);
-  }
-
-  protected onLazyLoad(event: ProductsTablePageEvent): void {
-    const nextFirst = event.first ?? 0;
-    const nextRows = event.rows || this.rows;
-    const nextPage = Math.floor(nextFirst / nextRows) + 1;
-
-    this.first.set(nextFirst);
-    this.loadProducts(nextPage);
   }
 
   protected resolveImage(urlImage: string): string {
@@ -192,6 +186,7 @@ export class Products implements OnInit, OnDestroy {
   private loadProducts(page: number): void {
     this.productsRequestSubscription?.unsubscribe();
     this.isLoading.set(true);
+    console.log('cargando products');
 
     this.productsRequestSubscription = this.productsService
       .getProducts({
@@ -219,7 +214,7 @@ export class Products implements OnInit, OnDestroy {
     this.deletingProductId.set(product.id);
 
     this.productsService
-        .deleteProduct(product.id)
+      .deleteProduct(product.id)
       .pipe(finalize(() => this.deletingProductId.set(null)))
       .subscribe({
         next: () => {

@@ -11,7 +11,7 @@
   } @else {
     <div class="catalog-layout">
       <div class="catalog-layout__main">
-        <form class="catalog-toolbar" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+        <form class="catalog-toolbar" [formGroup]="filtersForm">
           <div class="catalog-toolbar__field catalog-toolbar__field--search">
             <label class="catalog-toolbar__label" for="product-search">Buscar repuesto</label>
             <input
@@ -21,6 +21,7 @@
               formControlName="search"
               class="catalog-toolbar__input"
               placeholder="Nombre, código o palabra clave"
+              (keydown.enter)="applyFilters()"
             />
           </div>
 
@@ -39,7 +40,7 @@
           </div>
 
           <div class="catalog-toolbar__actions">
-            <button pButton type="submit" icon="pi pi-search" label="Buscar"></button>
+            <button pButton icon="pi pi-search" label="Buscar" (click)="applyFilters()"></button>
 
             @if (hasActiveFilters()) {
               <button

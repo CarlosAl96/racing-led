@@ -10,7 +10,11 @@
   border: 1px solid color-mix(in srgb, var(--p-content-border-color) 70%, transparent);
   border-radius: var(--p-border-radius-xl);
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--p-primary-500) 10%, transparent), transparent 55%),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--p-primary-500) 10%, transparent),
+      transparent 55%
+    ),
     color-mix(in srgb, var(--p-surface-0) 94%, transparent);
 }
 
@@ -308,7 +312,6 @@
   }
 }
 
-
 @media (max-width: 767px) {
   .products-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -326,7 +329,13 @@
   }
 
   .product-content {
+    flex: 1;
     gap: 0.22rem;
+  }
+
+  .product-price-row {
+    margin-top: auto;
+    padding-top: 0.2rem;
   }
 
   .product-sku,
