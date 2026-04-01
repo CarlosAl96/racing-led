@@ -36,6 +36,7 @@
       [totalRecords]="totalRecords()"
       [loading]="isLoading()"
       [rowHover]="true"
+      (onLazyLoad)="onLazyLoad($event)"
       class="admin-products-table"
     >
       <ng-template #caption>

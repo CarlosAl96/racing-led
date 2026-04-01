@@ -151,6 +151,17 @@ export class Products implements OnInit, OnDestroy {
     this.loadProducts(1);
   }
 
+  protected onLazyLoad(event: ProductsTablePageEvent): void {
+    const nextFirst = event.first ?? 0;
+
+    if (nextFirst === this.first()) {
+      return;
+    }
+
+    this.first.set(nextFirst);
+    this.loadProducts(this.getCurrentPage());
+  }
+
   protected resolveImage(urlImage: string): string {
     if (!urlImage || !urlImage.trim()) {
       return this.fallbackImage;
@@ -186,7 +197,6 @@ export class Products implements OnInit, OnDestroy {
   private loadProducts(page: number): void {
     this.productsRequestSubscription?.unsubscribe();
     this.isLoading.set(true);
-    console.log('cargando products');
 
     this.productsRequestSubscription = this.productsService
       .getProducts({
