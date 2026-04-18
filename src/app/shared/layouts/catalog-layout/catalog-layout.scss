@@ -23,9 +23,56 @@
 	flex: 0 0 auto;
 }
 
-.fab-bottom-right {
+.fab-whatsapp {
 	position: fixed;
-	bottom: 15%;
-	right: 2%;
+	right: 1.25rem;
+	bottom: 7rem;
 	z-index: 1000;
+	width: 3.5rem;
+	height: 3.5rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	text-decoration: none;
+	font-size: 2.5rem;
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+	&:hover {
+		transform: scale(1.05);
+		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+	}
+
+	@media (min-width: 768px) {
+		right: 2.5rem;
+		bottom: 7rem;
+		width: 4rem;
+		height: 4rem;
+		font-size: 1.75rem;
+	}
+}
+
+:host ::ng-deep .fab-whatsapp {
+
+	.p-button-icon,
+	.pi,
+	.pi-whatsapp {
+		font-size: 1.75rem !important;
+		line-height: 1;
+	}
+
+	@media (min-width: 768px) {
+
+		.p-button-icon,
+		.pi,
+		.pi-whatsapp {
+			font-size: 2rem !important;
+		}
+	}
+}
+
+@media (max-width: 767px) {
+	.fab-whatsapp {
+		bottom: 10rem;
+	}
 }

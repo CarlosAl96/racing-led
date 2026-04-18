@@ -8,6 +8,16 @@
   </main>
 
   <app-shopping-cart mode="mobile" [headerOffset]="headerHeight()"></app-shopping-cart>
-  <p-button icon="pi pi-whatsapp" [rounded]="true" severity="success" class="fab-bottom-right" />
+  <a
+    pButton
+    href="https://wa.me/584247392133?text=hola%20Brandon"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Contactar por WhatsApp"
+    icon="pi pi-whatsapp"
+    [rounded]="true"
+    severity="success"
+    class="fab-whatsapp"
+  ></a>
   <app-footer class="catalog-footer"></app-footer>
 </div>
