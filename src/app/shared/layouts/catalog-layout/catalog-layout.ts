@@ -11,10 +11,11 @@ import { Header } from '../../components/header/header';
 import { Footer } from '../../components/footer/footer';
 import { RouterOutlet } from '@angular/router';
 import { ShoppingCart } from '../../../catalog/shopping-cart/shopping-cart';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-catalog-layout',
-  imports: [Header, RouterOutlet, Footer, ShoppingCart],
+  imports: [Header, RouterOutlet, Footer, ShoppingCart, ButtonModule],
   templateUrl: './catalog-layout.html',
   styleUrl: './catalog-layout.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

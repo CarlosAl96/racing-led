@@ -22,3 +22,10 @@
 .catalog-footer {
 	flex: 0 0 auto;
 }
+
+.fab-bottom-right {
+	position: fixed;
+	bottom: 15%;
+	right: 2%;
+	z-index: 1000;
+}

@@ -10,11 +10,9 @@
   border: 1px solid color-mix(in srgb, var(--p-content-border-color) 70%, transparent);
   border-radius: var(--p-border-radius-xl);
   background:
-    linear-gradient(
-      135deg,
+    linear-gradient(135deg,
       color-mix(in srgb, var(--p-primary-500) 10%, transparent),
-      transparent 55%
-    ),
+      transparent 55%),
     color-mix(in srgb, var(--p-surface-0) 94%, transparent);
 }
 
@@ -231,8 +229,8 @@
 
 .image-preview-dialog {
   position: relative;
-  width: min(92vw, 920px);
-  max-height: 88vh;
+  justify-items: center;
+  max-height: 60vh;
   border-radius: var(--p-border-radius-xl);
   border: 1px solid color-mix(in srgb, var(--p-content-border-color) 75%, transparent);
   background: color-mix(in srgb, var(--p-surface-0) 92%, transparent);
@@ -252,8 +250,7 @@
 }
 
 .image-preview-full {
-  width: 100%;
-  max-height: calc(88vh - 4.3rem);
+
   object-fit: contain;
   border-radius: var(--p-border-radius-lg);
 }
@@ -367,7 +364,7 @@
     padding: 0.45rem 0.55rem;
   }
 
-  .catalog-toolbar__actions > * {
+  .catalog-toolbar__actions>* {
     flex: 1 1 auto;
   }
 
@@ -386,6 +383,7 @@
     opacity: 0;
     transform: translateY(8px) scale(0.985);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -396,12 +394,14 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .product-card,
   .product-image,
   .image-preview-backdrop {
