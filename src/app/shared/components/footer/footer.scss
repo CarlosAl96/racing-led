@@ -8,6 +8,8 @@
   background: color-mix(in srgb, var(--p-surface-0) 90%, transparent);
   display: flex;
   justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .footer-compact {
@@ -48,6 +50,10 @@
   color: var(--p-text-muted-color);
   line-height: 1.35;
   font-size: 0.84rem;
+}
+
+.footer-address {
+  font-size: 0.8rem;
 }
 
 .footer-toggle {
@@ -183,8 +189,20 @@
 }
 
 @media (max-width: 767px) {
+  .footer-compact {
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
+  }
+
   .footer-visible {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .footer-toggle {
+    align-self: center;
+    margin-top: 0;
   }
 
   .footer-extra-grid {
