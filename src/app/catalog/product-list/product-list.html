@@ -1,137 +1,225 @@
 <section class="product-list-wrapper px-3 py-4 md:px-4">
   @if (isLoading()) {
-  <div class="loading-initial" role="status" aria-live="polite" aria-label="Cargando repuestos">
-    <div class="loading-parts">
-      <span class="loading-parts-wheel" aria-hidden="true">
-        <i class="pi pi-cog"></i>
-      </span>
-      <span class="loading-parts-text">Buscando repuestos...</span>
-    </div>
-  </div>
-  } @else {
-  <div class="catalog-layout">
-    <div class="catalog-layout__main">
-      <form class="catalog-toolbar" [formGroup]="filtersForm">
-        <div class="catalog-toolbar__field catalog-toolbar__field--search">
-          <label class="catalog-toolbar__label" for="product-search">Buscar repuesto</label>
-          <input id="product-search" pInputText type="search" formControlName="search" class="catalog-toolbar__input"
-            placeholder="Nombre, código o palabra clave" (keydown.enter)="applyFilters()" />
-        </div>
-
-        <div class="catalog-toolbar__field catalog-toolbar__field--category">
-          <label class="catalog-toolbar__label" for="product-category">Categoría</label>
-          <p-select inputId="product-category" formControlName="category" [options]="categoryOptions()"
-            optionLabel="label" optionValue="value" [loading]="isLoadingCategories()" placeholder="Todas las categorías"
-            class="catalog-toolbar__select"></p-select>
-        </div>
-
-        <div class="catalog-toolbar__actions">
-          <button pButton icon="pi pi-search" label="Buscar" (click)="applyFilters()"></button>
-
-          @if (hasActiveFilters()) {
-          <button pButton type="button" severity="secondary" variant="outlined" label="Limpiar"
-            (click)="clearFilters()"></button>
-          }
-        </div>
-      </form>
-
-      <div class="catalog-results__products">
-        <div class="catalog-meta">
-          <span>{{ totalRecords() }} repuestos disponibles</span>
-
-          @if (hasActiveFilters()) {
-          <span>Filtros activos</span>
-          }
-        </div>
-
-        @if (hasProducts()) {
-        <div class="products-grid">
-          @for (product of products(); track product.id) {
-          <article class="product-card">
-            <div class="product-image-wrap" tabindex="0" role="button"
-              [attr.aria-label]="'Ver imagen ampliada de ' + product.name"
-              (click)="openImagePreview(resolveImage(product.picture), product.name)"
-              (keydown.enter)="openImagePreview(resolveImage(product.picture), product.name)"
-              (keydown.space)="openImagePreview(resolveImage(product.picture), product.name)">
-              <img [src]="resolveImage(product.picture)" [alt]="product.name" class="product-image" loading="lazy"
-                (error)="onImageError($event)" />
-            </div>
-
-            <div class="product-content">
-              <p class="product-sku m-0">CÓDIGO: {{ product.sku }}</p>
-              <h3 class="product-name m-0">{{ product.name }}</h3>
-              <p class="product-category m-0">{{ product.category || 'Sin categoría' }}</p>
-
-              <div class="product-price-row">
-                <p class="product-price m-0">
-                  @if (resolvePriceBs(product.price); as priceBs) {
-                  Bs {{ priceBs | number: '1.0-2' }}
-                  } @else {
-                  Bs --
-                  }
-                </p>
-
-                @if (isMobile()) {
-                <button pButton type="button" icon="pi pi-shopping-cart" [rounded]="true" [text]="true"
-                  class="add-cart-icon-button" [attr.aria-label]="'Cotizar ' + product.name"
-                  (click)="addToQuote(product)"></button>
-                }
-              </div>
-            </div>
-
-            @if (!isMobile()) {
-            <button pButton type="button" label="Cotizar" icon="pi pi-shopping-cart" class="w-full add-cart-button"
-              (click)="addToQuote(product)"></button>
-            }
-          </article>
-          }
-        </div>
-        } @else {
-        <div class="text-center py-8">
-          {{
-          hasActiveFilters()
-          ? 'No hay productos para esta búsqueda.'
-          : 'No hay productos disponibles.'
-          }}
-        </div>
-        }
-
-        <div class="infinite-scroll-state mt-4">
-          @if (isLoadingMore()) {
-          <div class="loading-parts loading-parts-more" role="status" aria-live="polite"
-            aria-label="Cargando repuestos">
-            <span class="loading-parts-wheel" aria-hidden="true">
-              <i class="pi pi-cog"></i>
-            </span>
-            <span class="loading-parts-text">Buscando repuestos...</span>
-          </div>
-          }
-
-          @if (!hasMore() && hasProducts()) {
-          <div class="text-center py-3">Has llegado al final del catálogo.</div>
-          }
-
-          <div #infiniteTrigger class="infinite-trigger" aria-hidden="true"></div>
-        </div>
+    <div class="loading-initial" role="status" aria-live="polite" aria-label="Cargando repuestos">
+      <div class="loading-parts">
+        <span class="loading-parts-wheel" aria-hidden="true">
+          <i class="pi pi-cog"></i>
+        </span>
+        <span class="loading-parts-text">Buscando repuestos...</span>
       </div>
     </div>
+  } @else {
+    <div class="catalog-layout">
+      <div class="catalog-layout__main">
+        <section class="sales-advisor-banner" aria-label="Asesoría de ventas personalizada">
+          <div class="sales-advisor-banner__content">
+            <p class="sales-advisor-banner__description m-0">
+              Para mayor información, comunícate con Alexandra López, asesora de ventas con 5 años
+              de experiencia. Cuenta con dominio integral del ciclo de ventas e implementación de
+              técnicas de merchandising que optimizan la visibilidad del producto y la experiencia
+              de compra. Su enfoque se centra en la escucha activa y el asesoramiento personalizado,
+              garantizando altos niveles de satisfacción y fidelización.
+            </p>
+          </div>
 
-    <app-shopping-cart mode="desktop" class="catalog-layout__cart"></app-shopping-cart>
-  </div>
+          <a
+            pButton
+            href="https://wa.me/584247027005?text=Hola%20Alexandra%2C%20vi%20el%20catalogo%20de%20Racing%20Led%20y%20me%20gustaria%20recibir%20asesoria%20personalizada%20para%20elegir%20los%20repuestos%20ideales%20para%20mi%20vehiculo.%20%C2%BFPodrias%20brindarme%20mas%20informacion%2C%20por%20favor%3F"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="sales-advisor-banner__action"
+            icon="pi pi-whatsapp"
+            label="Solicitar asesoría"
+            aria-label="Contactar por WhatsApp para solicitar más información con la asesora Alexandra López"
+          ></a>
+        </section>
+
+        <form class="catalog-toolbar" [formGroup]="filtersForm">
+          <div class="catalog-toolbar__field catalog-toolbar__field--search">
+            <label class="catalog-toolbar__label" for="product-search">Buscar repuesto</label>
+            <input
+              id="product-search"
+              pInputText
+              type="search"
+              formControlName="search"
+              class="catalog-toolbar__input"
+              placeholder="Nombre, código o palabra clave"
+              (keydown.enter)="applyFilters()"
+            />
+          </div>
+
+          <div class="catalog-toolbar__field catalog-toolbar__field--category">
+            <label class="catalog-toolbar__label" for="product-category">Categoría</label>
+            <p-select
+              inputId="product-category"
+              formControlName="category"
+              [options]="categoryOptions()"
+              optionLabel="label"
+              optionValue="value"
+              [loading]="isLoadingCategories()"
+              placeholder="Todas las categorías"
+              class="catalog-toolbar__select"
+            ></p-select>
+          </div>
+
+          <div class="catalog-toolbar__actions">
+            <button pButton icon="pi pi-search" label="Buscar" (click)="applyFilters()"></button>
+
+            @if (hasActiveFilters()) {
+              <button
+                pButton
+                type="button"
+                severity="secondary"
+                variant="outlined"
+                label="Limpiar"
+                (click)="clearFilters()"
+              ></button>
+            }
+          </div>
+        </form>
+
+        <div class="catalog-results__products">
+          <div class="catalog-meta">
+            <span>{{ totalRecords() }} repuestos disponibles</span>
+
+            @if (hasActiveFilters()) {
+              <span>Filtros activos</span>
+            }
+          </div>
+
+          @if (hasProducts()) {
+            <div class="products-grid">
+              @for (product of products(); track product.id) {
+                <article class="product-card">
+                  <div
+                    class="product-image-wrap"
+                    tabindex="0"
+                    role="button"
+                    [attr.aria-label]="'Ver imagen ampliada de ' + product.name"
+                    (click)="openImagePreview(resolveImage(product.picture), product.name)"
+                    (keydown.enter)="openImagePreview(resolveImage(product.picture), product.name)"
+                    (keydown.space)="openImagePreview(resolveImage(product.picture), product.name)"
+                  >
+                    <img
+                      [src]="resolveImage(product.picture)"
+                      [alt]="product.name"
+                      class="product-image"
+                      loading="lazy"
+                      (error)="onImageError($event)"
+                    />
+                  </div>
+
+                  <div class="product-content">
+                    <p class="product-sku m-0">CÓDIGO: {{ product.sku }}</p>
+                    <h3 class="product-name m-0">{{ product.name }}</h3>
+                    <p class="product-category m-0">{{ product.category || 'Sin categoría' }}</p>
+
+                    <div class="product-price-row">
+                      <p class="product-price m-0">
+                        @if (resolvePriceBs(product.price); as priceBs) {
+                          Bs {{ priceBs | number: '1.0-2' }}
+                        } @else {
+                          Bs --
+                        }
+                      </p>
+
+                      @if (isMobile()) {
+                        <button
+                          pButton
+                          type="button"
+                          icon="pi pi-whatsapp"
+                          [rounded]="true"
+                          [text]="true"
+                          class="add-cart-icon-button"
+                          [attr.aria-label]="'Cotizar ' + product.name"
+                          (click)="addToQuote(product)"
+                        ></button>
+                      }
+                    </div>
+                  </div>
+
+                  @if (!isMobile()) {
+                    <button
+                      pButton
+                      type="button"
+                      label="Cotizar"
+                      icon="pi pi-whatsapp"
+                      class="w-full add-cart-button"
+                      (click)="addToQuote(product)"
+                    ></button>
+                  }
+                </article>
+              }
+            </div>
+          } @else {
+            <div class="text-center py-8">
+              {{
+                hasActiveFilters()
+                  ? 'No hay productos para esta búsqueda.'
+                  : 'No hay productos disponibles.'
+              }}
+            </div>
+          }
+
+          <div class="infinite-scroll-state mt-4">
+            @if (isLoadingMore()) {
+              <div
+                class="loading-parts loading-parts-more"
+                role="status"
+                aria-live="polite"
+                aria-label="Cargando repuestos"
+              >
+                <span class="loading-parts-wheel" aria-hidden="true">
+                  <i class="pi pi-cog"></i>
+                </span>
+                <span class="loading-parts-text">Buscando repuestos...</span>
+              </div>
+            }
+
+            @if (!hasMore() && hasProducts()) {
+              <div class="text-center py-3">Has llegado al final del catálogo.</div>
+            }
+
+            <div #infiniteTrigger class="infinite-trigger" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+
+      <app-shopping-cart mode="desktop" class="catalog-layout__cart"></app-shopping-cart>
+    </div>
   }
 </section>
 
 @if (previewImageUrl(); as imageUrl) {
-<div class="image-preview-backdrop" [class.is-open]="isPreviewOpen()" (click)="closeImagePreview()" aria-modal="true"
-  role="dialog">
-  <div class="image-preview-dialog" [class.is-open]="isPreviewOpen()" (click)="$event.stopPropagation()">
-    <button type="button" class="image-preview-close" aria-label="Cerrar imagen ampliada" (click)="closeImagePreview()">
-      <i class="pi pi-times" aria-hidden="true"></i>
-    </button>
+  <div
+    class="image-preview-backdrop"
+    [class.is-open]="isPreviewOpen()"
+    (click)="closeImagePreview()"
+    aria-modal="true"
+    role="dialog"
+  >
+    <div
+      class="image-preview-dialog"
+      [class.is-open]="isPreviewOpen()"
+      (click)="$event.stopPropagation()"
+    >
+      <button
+        type="button"
+        class="image-preview-close"
+        aria-label="Cerrar imagen ampliada"
+        (click)="closeImagePreview()"
+      >
+        <i class="pi pi-times" aria-hidden="true"></i>
+      </button>
 
-    <img [src]="imageUrl" [alt]="previewImageName()" class="image-preview-full" [width]="!isMobile()? '400': '300'"
-      [height]="!isMobile()?  '400': '300'" />
-    <p class="image-preview-caption m-0">{{ previewImageName() }}</p>
+      <img
+        [src]="imageUrl"
+        [alt]="previewImageName()"
+        class="image-preview-full"
+        [width]="!isMobile() ? '400' : '300'"
+        [height]="!isMobile() ? '400' : '300'"
+      />
+      <p class="image-preview-caption m-0">{{ previewImageName() }}</p>
+    </div>
   </div>
-</div>
 }

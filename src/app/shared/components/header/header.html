@@ -23,11 +23,12 @@
       <button
         pButton
         type="button"
-        icon="pi pi-shopping-cart"
+        icon="pi pi-whatsapp"
         [rounded]="true"
         [text]="true"
         class="cart-button"
         [class.is-active]="isCartOpen()"
+        [class.is-pulsing]="isCartPulsing()"
         [attr.aria-label]="
           isCartOpen() ? 'Cerrar carrito de cotización' : 'Abrir carrito de cotización'
         "

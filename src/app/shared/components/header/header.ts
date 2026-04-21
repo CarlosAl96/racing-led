@@ -4,6 +4,7 @@ import {
   OnDestroy,
   OnInit,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -21,14 +22,40 @@ import { QuoteCartService } from '../../../core/services/quote-cart.service';
 export class Header implements OnInit, OnDestroy {
   private readonly quoteCartService = inject(QuoteCartService);
   private readonly desktopBreakpoint = 992;
+  private readonly pulseDurationMs = 1200;
   private readonly resizeHandler = () => this.syncViewportMode();
+  private hasSeenPulse = false;
 
   readonly brandTitle = 'RACING LED';
   protected readonly isMobile = signal(false);
   protected readonly cartCount = this.quoteCartService.totalQuantity;
+  protected readonly isCartPulsing = signal(false);
   protected readonly isCartOpen = computed(() =>
     this.isMobile() ? this.quoteCartService.isMobileOpen() : this.quoteCartService.isDesktopOpen(),
   );
+
+  constructor() {
+    effect((onCleanup) => {
+      this.quoteCartService.addPulse();
+
+      if (!this.hasSeenPulse) {
+        this.hasSeenPulse = true;
+        return;
+      }
+
+      this.isCartPulsing.set(true);
+
+      if (typeof window === 'undefined') {
+        return;
+      }
+
+      const pulseTimeout = window.setTimeout(() => {
+        this.isCartPulsing.set(false);
+      }, this.pulseDurationMs);
+
+      onCleanup(() => window.clearTimeout(pulseTimeout));
+    });
+  }
 
   ngOnInit(): void {
     this.syncViewportMode();

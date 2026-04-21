@@ -7,6 +7,7 @@ import { Product } from '../models/product';
 })
 export class QuoteCartService {
   readonly items = signal<QuoteCartItem[]>([]);
+  readonly addPulse = signal(0);
   readonly isDesktopOpen = signal(false);
   readonly isMobileOpen = signal(false);
   readonly hasItems = computed(() => this.items().length > 0);
@@ -22,10 +23,12 @@ export class QuoteCartService {
 
     if (existingItem) {
       this.setItemQuantity(product.id, existingItem.quantity + 1);
+      this.emitAddPulse();
       return;
     }
 
     this.items.update((items) => [...items, { product, quantity: 1 }]);
+    this.emitAddPulse();
   }
 
   incrementQuantity(productId: number): void {
@@ -127,5 +130,9 @@ export class QuoteCartService {
   private closeAll(): void {
     this.isDesktopOpen.set(false);
     this.isMobileOpen.set(false);
+  }
+
+  private emitAddPulse(): void {
+    this.addPulse.update((pulse) => pulse + 1);
   }
 }

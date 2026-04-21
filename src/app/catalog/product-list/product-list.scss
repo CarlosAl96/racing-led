@@ -16,6 +16,54 @@
     color-mix(in srgb, var(--p-surface-0) 94%, transparent);
 }
 
+.sales-advisor-banner {
+  display: grid;
+  width: 100%;
+  gap: 0.65rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--p-border-radius-xl);
+  border: 1px solid color-mix(in srgb, var(--p-content-border-color) 72%, transparent);
+  background:
+    linear-gradient(120deg,
+      color-mix(in srgb, #25d366 7%, transparent),
+      transparent 60%),
+    color-mix(in srgb, var(--p-surface-0) 99%, white 1%);
+}
+
+.sales-advisor-banner__content {
+  display: grid;
+  gap: 0.32rem;
+  width: 100%;
+}
+
+.sales-advisor-banner__name {
+  font-size: clamp(1rem, 0.95rem + 0.4vw, 1.2rem);
+  font-weight: 700;
+  color: var(--p-text-color);
+}
+
+.sales-advisor-banner__description {
+  font-size: 0.88rem;
+  line-height: 1.33;
+  color: var(--p-text-muted-color);
+  max-width: none;
+}
+
+:host ::ng-deep .sales-advisor-banner__action {
+  justify-self: start;
+  background: #25d366;
+  border-color: #25d366;
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: none !important;
+}
+
+:host ::ng-deep .sales-advisor-banner__action:hover {
+  background: #1ebe5d;
+  border-color: #1ebe5d;
+  text-decoration: none !important;
+}
+
 .catalog-toolbar__field {
   display: grid;
   gap: 0.45rem;
@@ -287,6 +335,12 @@
 }
 
 @media (min-width: 768px) {
+  .sales-advisor-banner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+  }
+
   .catalog-toolbar {
     grid-template-columns: minmax(0, 1.7fr) minmax(220px, 0.9fr) auto;
     align-items: end;
@@ -310,6 +364,19 @@
 }
 
 @media (max-width: 767px) {
+  .sales-advisor-banner {
+    padding: 0.75rem;
+    gap: 0.6rem;
+  }
+
+  :host ::ng-deep .sales-advisor-banner__action {
+    justify-self: end;
+  }
+
+  .sales-advisor-banner__description {
+    font-size: 0.86rem;
+  }
+
   .products-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.6rem;
