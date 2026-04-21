@@ -30,6 +30,12 @@
   flex: 0 0 auto;
 }
 
+.header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
 :host-context(.app-dark) .header-title {
   color: var(--p-primary-200);
 }
@@ -45,6 +51,19 @@
 
 :host ::ng-deep .cart-button:hover {
   transform: translateY(-1px) scale(1.05);
+}
+
+:host ::ng-deep .catalog-filter-button {
+  transition: transform 180ms ease;
+}
+
+:host ::ng-deep .catalog-filter-button:hover {
+  transform: translateY(-1px) scale(1.05);
+}
+
+:host ::ng-deep .catalog-filter-button.is-active {
+  color: var(--p-primary-600);
+  background: color-mix(in srgb, var(--p-primary-500) 12%, transparent);
 }
 
 :host ::ng-deep .cart-button.is-pulsing {
@@ -129,6 +148,7 @@
   }
 
   :host ::ng-deep .cart-button,
+  :host ::ng-deep .catalog-filter-button,
   :host ::ng-deep .cart-button.is-pulsing,
   :host ::ng-deep .cart-button.is-pulsing::after {
     transition: none;

@@ -13,27 +13,45 @@
       </h1>
     </div>
 
-    <span
-      class="cart-button-wrap p-overlay-badge"
-      pBadge
-      [value]="cartCount()"
-      severity="secondary"
-      [badgeDisabled]="cartCount() === 0"
-    >
-      <button
-        pButton
-        type="button"
-        icon="pi pi-whatsapp"
-        [rounded]="true"
-        [text]="true"
-        class="cart-button"
-        [class.is-active]="isCartOpen()"
-        [class.is-pulsing]="isCartPulsing()"
-        [attr.aria-label]="
-          isCartOpen() ? 'Cerrar carrito de cotización' : 'Abrir carrito de cotización'
-        "
-        (click)="toggleCart()"
-      ></button>
-    </span>
+    <div class="header-actions">
+      @if (isCatalogFilterToggleVisible()) {
+        <button
+          pButton
+          type="button"
+          icon="pi pi-search"
+          [rounded]="true"
+          [text]="true"
+          class="catalog-filter-button"
+          [class.is-active]="isCatalogFiltersOpen()"
+          [attr.aria-label]="
+            isCatalogFiltersOpen() ? 'Ocultar filtros del catálogo' : 'Mostrar filtros del catálogo'
+          "
+          (click)="toggleCatalogFilters()"
+        ></button>
+      }
+
+      <span
+        class="cart-button-wrap p-overlay-badge"
+        pBadge
+        [value]="cartCount()"
+        severity="secondary"
+        [badgeDisabled]="cartCount() === 0"
+      >
+        <button
+          pButton
+          type="button"
+          icon="pi pi-whatsapp"
+          [rounded]="true"
+          [text]="true"
+          class="cart-button"
+          [class.is-active]="isCartOpen()"
+          [class.is-pulsing]="isCartPulsing()"
+          [attr.aria-label]="
+            isCartOpen() ? 'Cerrar carrito de cotización' : 'Abrir carrito de cotización'
+          "
+          (click)="toggleCart()"
+        ></button>
+      </span>
+    </div>
   </div>
 </header>

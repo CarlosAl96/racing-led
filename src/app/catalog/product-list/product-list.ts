@@ -19,6 +19,7 @@ import { Product } from '../../core/models/product';
 import { DolarAPIService } from '../../core/services/dolar-api.service';
 import { ProductsService } from '../../core/services/products.service';
 import { QuoteCartService } from '../../core/services/quote-cart.service';
+import { CatalogFiltersService } from '../../core/services/catalog-filters.service';
 import { ShoppingCart } from '../shopping-cart/shopping-cart';
 
 interface CategoryOption {
@@ -44,6 +45,7 @@ export class ProductList implements OnInit, OnDestroy {
   private readonly productsService = inject(ProductsService);
   private readonly dolarApiService = inject(DolarAPIService);
   private readonly quoteCartService = inject(QuoteCartService);
+  private readonly catalogFiltersService = inject(CatalogFiltersService);
   private readonly previewAnimationMs = 260;
   private readonly desktopBreakpoint = 992;
   private readonly resizeHandler = () => this.syncViewportMode();
@@ -91,6 +93,7 @@ export class ProductList implements OnInit, OnDestroy {
   protected readonly isPreviewOpen = signal(false);
   protected readonly isMobile = signal(false);
   protected readonly hasProducts = computed(() => this.products().length > 0);
+  protected readonly isFiltersOpen = this.catalogFiltersService.isFiltersOpen;
   protected readonly hasActiveFilters = computed(
     () => !!this.appliedSearch() || !!this.appliedCategory(),
   );
@@ -102,6 +105,7 @@ export class ProductList implements OnInit, OnDestroy {
     })),
   ]);
   ngOnInit(): void {
+    this.catalogFiltersService.showToggle();
     this.syncViewportMode();
     this.loadCategories();
     this.loadExchangeRate();
@@ -113,6 +117,7 @@ export class ProductList implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.catalogFiltersService.hideToggle();
     this.productsRequestSubscription?.unsubscribe();
     this.observer?.disconnect();
 

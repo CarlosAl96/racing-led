@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
+import { CatalogFiltersService } from '../../../core/services/catalog-filters.service';
 import { QuoteCartService } from '../../../core/services/quote-cart.service';
 
 @Component({
@@ -21,6 +22,7 @@ import { QuoteCartService } from '../../../core/services/quote-cart.service';
 })
 export class Header implements OnInit, OnDestroy {
   private readonly quoteCartService = inject(QuoteCartService);
+  private readonly catalogFiltersService = inject(CatalogFiltersService);
   private readonly desktopBreakpoint = 992;
   private readonly pulseDurationMs = 1200;
   private readonly resizeHandler = () => this.syncViewportMode();
@@ -29,6 +31,8 @@ export class Header implements OnInit, OnDestroy {
   readonly brandTitle = 'RACING LED';
   protected readonly isMobile = signal(false);
   protected readonly cartCount = this.quoteCartService.totalQuantity;
+  protected readonly isCatalogFilterToggleVisible = this.catalogFiltersService.isToggleVisible;
+  protected readonly isCatalogFiltersOpen = this.catalogFiltersService.isFiltersOpen;
   protected readonly isCartPulsing = signal(false);
   protected readonly isCartOpen = computed(() =>
     this.isMobile() ? this.quoteCartService.isMobileOpen() : this.quoteCartService.isDesktopOpen(),
@@ -82,6 +86,10 @@ export class Header implements OnInit, OnDestroy {
     }
 
     this.quoteCartService.toggleDesktop();
+  }
+
+  protected toggleCatalogFilters(): void {
+    this.catalogFiltersService.toggleFilters();
   }
 
   private syncViewportMode(): void {

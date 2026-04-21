@@ -34,49 +34,51 @@
           ></a>
         </section>
 
-        <form class="catalog-toolbar" [formGroup]="filtersForm">
-          <div class="catalog-toolbar__field catalog-toolbar__field--search">
-            <label class="catalog-toolbar__label" for="product-search">Buscar repuesto</label>
-            <input
-              id="product-search"
-              pInputText
-              type="search"
-              formControlName="search"
-              class="catalog-toolbar__input"
-              placeholder="Nombre, código o palabra clave"
-              (keydown.enter)="applyFilters()"
-            />
-          </div>
+        @if (isFiltersOpen()) {
+          <form class="catalog-toolbar" [formGroup]="filtersForm">
+            <div class="catalog-toolbar__field catalog-toolbar__field--search">
+              <label class="catalog-toolbar__label" for="product-search">Buscar repuesto</label>
+              <input
+                id="product-search"
+                pInputText
+                type="search"
+                formControlName="search"
+                class="catalog-toolbar__input"
+                placeholder="Nombre, código o palabra clave"
+                (keydown.enter)="applyFilters()"
+              />
+            </div>
 
-          <div class="catalog-toolbar__field catalog-toolbar__field--category">
-            <label class="catalog-toolbar__label" for="product-category">Categoría</label>
-            <p-select
-              inputId="product-category"
-              formControlName="category"
-              [options]="categoryOptions()"
-              optionLabel="label"
-              optionValue="value"
-              [loading]="isLoadingCategories()"
-              placeholder="Todas las categorías"
-              class="catalog-toolbar__select"
-            ></p-select>
-          </div>
+            <div class="catalog-toolbar__field catalog-toolbar__field--category">
+              <label class="catalog-toolbar__label" for="product-category">Categoría</label>
+              <p-select
+                inputId="product-category"
+                formControlName="category"
+                [options]="categoryOptions()"
+                optionLabel="label"
+                optionValue="value"
+                [loading]="isLoadingCategories()"
+                placeholder="Todas las categorías"
+                class="catalog-toolbar__select"
+              ></p-select>
+            </div>
 
-          <div class="catalog-toolbar__actions">
-            <button pButton icon="pi pi-search" label="Buscar" (click)="applyFilters()"></button>
+            <div class="catalog-toolbar__actions">
+              <button pButton icon="pi pi-search" label="Buscar" (click)="applyFilters()"></button>
 
-            @if (hasActiveFilters()) {
-              <button
-                pButton
-                type="button"
-                severity="secondary"
-                variant="outlined"
-                label="Limpiar"
-                (click)="clearFilters()"
-              ></button>
-            }
-          </div>
-        </form>
+              @if (hasActiveFilters()) {
+                <button
+                  pButton
+                  type="button"
+                  severity="secondary"
+                  variant="outlined"
+                  label="Limpiar"
+                  (click)="clearFilters()"
+                ></button>
+              }
+            </div>
+          </form>
+        }
 
         <div class="catalog-results__products">
           <div class="catalog-meta">
