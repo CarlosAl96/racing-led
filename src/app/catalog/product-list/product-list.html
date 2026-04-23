@@ -12,14 +12,25 @@
     <div class="catalog-layout">
       <div class="catalog-layout__main">
         <section class="sales-advisor-banner" aria-label="Asesoría de ventas personalizada">
-          <div class="sales-advisor-banner__content">
-            <p class="sales-advisor-banner__description m-0">
-              Para mayor información, comunícate con Alexandra López, asesora de ventas con 5 años
-              de experiencia. Cuenta con dominio integral del ciclo de ventas e implementación de
-              técnicas de merchandising que optimizan la visibilidad del producto y la experiencia
-              de compra. Su enfoque se centra en la escucha activa y el asesoramiento personalizado,
-              garantizando altos niveles de satisfacción y fidelización.
-            </p>
+          <div class="flex gap-1 align-items-center">
+            <div class="sales-advisor-banner__avatar" aria-hidden="true">
+              <img
+                ngSrc="assets/support.PNG"
+                width="112"
+                height="112"
+                alt=""
+                class="sales-advisor-banner__avatar-image"
+              />
+            </div>
+
+            <div class="sales-advisor-banner__content">
+              <p class="sales-advisor-banner__description m-0">
+                <span class="sales-advisor-banner__name">Alexandra López</span><br />
+                Asesora Racing LED | Distribuidor Plast Innova<br />
+                Atención directa, sin rodeos.<br />
+                Si tu luz ya no brilla, llegaste al lugar indicado
+              </p>
+            </div>
           </div>
 
           <a
@@ -129,7 +140,7 @@
                         <button
                           pButton
                           type="button"
-                          icon="pi pi-whatsapp"
+                          icon="pi pi-shopping-cart"
                           [rounded]="true"
                           [text]="true"
                           class="add-cart-icon-button"
@@ -145,7 +156,7 @@
                       pButton
                       type="button"
                       label="Cotizar"
-                      icon="pi pi-whatsapp"
+                      icon="pi pi-shopping-cart"
                       class="w-full add-cart-button"
                       (click)="addToQuote(product)"
                     ></button>

@@ -11,9 +11,11 @@
   border: 1px solid color-mix(in srgb, var(--p-content-border-color) 70%, transparent);
   border-radius: var(--p-border-radius-xl);
   background:
-    linear-gradient(135deg,
+    linear-gradient(
+      135deg,
       color-mix(in srgb, var(--p-primary-500) 10%, transparent),
-      transparent 55%),
+      transparent 55%
+    ),
     color-mix(in srgb, var(--p-surface-0) 94%, transparent);
 }
 
@@ -21,14 +23,28 @@
   display: grid;
   width: 100%;
   gap: 0.65rem;
+  align-items: center;
   padding: 0.75rem 0.9rem;
   border-radius: var(--p-border-radius-xl);
   border: 1px solid color-mix(in srgb, var(--p-content-border-color) 72%, transparent);
   background:
-    linear-gradient(120deg,
-      color-mix(in srgb, #25d366 7%, transparent),
-      transparent 60%),
+    linear-gradient(120deg, color-mix(in srgb, #25d366 7%, transparent), transparent 60%),
     color-mix(in srgb, var(--p-surface-0) 99%, white 1%);
+}
+
+.sales-advisor-banner__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sales-advisor-banner__avatar-image {
+  width: 6rem;
+  height: 6rem;
+  object-fit: cover;
+  border-radius: 999px;
+  border: 2px solid color-mix(in srgb, var(--p-primary-500) 22%, transparent);
+  box-shadow: 0 8px 20px color-mix(in srgb, black 16%, transparent);
 }
 
 .sales-advisor-banner__content {
@@ -38,9 +54,13 @@
 }
 
 .sales-advisor-banner__name {
-  font-size: clamp(1rem, 0.95rem + 0.4vw, 1.2rem);
-  font-weight: 700;
-  color: var(--p-text-color);
+  display: inline-block;
+  margin-bottom: 0.18rem;
+  font-size: clamp(1.08rem, 1rem + 0.48vw, 1.32rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: color-mix(in srgb, var(--p-primary-500) 68%, #ffffff 32%);
+  text-shadow: 0 1px 0 color-mix(in srgb, black 22%, transparent);
 }
 
 .sales-advisor-banner__description {
@@ -299,7 +319,6 @@
 }
 
 .image-preview-full {
-
   object-fit: contain;
   border-radius: var(--p-border-radius-lg);
 }
@@ -348,9 +367,19 @@
 
 @media (min-width: 768px) {
   .sales-advisor-banner {
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
     gap: 1rem;
+  }
+
+  .sales-advisor-banner > .flex {
+    grid-column: 1 / 3;
+    min-width: 0;
+  }
+
+  :host ::ng-deep .sales-advisor-banner__action {
+    grid-column: 3;
+    justify-self: end;
   }
 
   .catalog-toolbar {
@@ -379,6 +408,15 @@
   .sales-advisor-banner {
     padding: 0.75rem;
     gap: 0.6rem;
+  }
+
+  .sales-advisor-banner__avatar {
+    justify-self: start;
+  }
+
+  .sales-advisor-banner__avatar-image {
+    width: 5rem;
+    height: 5rem;
   }
 
   :host ::ng-deep .sales-advisor-banner__action {
@@ -435,12 +473,11 @@
     height: 1.9rem;
   }
 
-
-@media (prefers-reduced-motion: reduce) {
-  .catalog-toolbar {
-    animation: none;
+  @media (prefers-reduced-motion: reduce) {
+    .catalog-toolbar {
+      animation: none;
+    }
   }
-}
   :host ::ng-deep .add-cart-button {
     font-size: 0.82rem;
   }
@@ -449,7 +486,7 @@
     padding: 0.45rem 0.55rem;
   }
 
-  .catalog-toolbar__actions>* {
+  .catalog-toolbar__actions > * {
     flex: 1 1 auto;
   }
 
@@ -486,7 +523,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .product-card,
   .product-image,
   .image-preview-backdrop {

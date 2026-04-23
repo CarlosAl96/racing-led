@@ -53,8 +53,17 @@
   transform: translateY(-1px) scale(1.05);
 }
 
-:host ::ng-deep .catalog-filter-button {
+:host ::ng-deep .catalog-filter-button.p-button.p-button-icon-only {
+  width: 3.2rem;
+  height: 3.2rem;
+  min-width: 3.2rem;
+  font-size: 1.2rem;
+  border-radius: 999px;
   transition: transform 180ms ease;
+}
+
+:host ::ng-deep .catalog-filter-button.p-button.p-button-icon-only .p-button-icon {
+  font-size: 1.25rem;
 }
 
 :host ::ng-deep .catalog-filter-button:hover {

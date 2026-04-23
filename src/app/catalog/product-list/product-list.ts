@@ -9,7 +9,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -32,6 +32,7 @@ interface CategoryOption {
   imports: [
     ButtonModule,
     DecimalPipe,
+    NgOptimizedImage,
     InputTextModule,
     ReactiveFormsModule,
     SelectModule,
