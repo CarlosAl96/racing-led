@@ -111,8 +111,8 @@ export class ProductList implements OnInit, OnDestroy {
   );
   protected readonly promotionCarouselResponsiveOptions = [
     {
-      breakpoint: '1360px',
-      numVisible: 4,
+      breakpoint: '1500px',
+      numVisible: 3,
       numScroll: 1,
     },
     {
@@ -194,7 +194,21 @@ export class ProductList implements OnInit, OnDestroy {
       return description;
     }
 
-    return `Hasta ${promotion.percent}% de descuento`;
+    return `Hasta ${this.resolvePromotionPercent(promotion)}% de descuento`;
+  }
+
+  protected resolvePromotionImage(promotion: Promotion): string {
+    return this.resolveImage(promotion.img ?? promotion.file ?? '');
+  }
+
+  protected resolvePromotionPercent(promotion: Promotion): string {
+    const normalizedPercent = promotion.percent <= 1 ? promotion.percent * 100 : promotion.percent;
+
+    if (Number.isInteger(normalizedPercent)) {
+      return String(normalizedPercent);
+    }
+
+    return normalizedPercent.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
   }
 
   protected resolvePriceBs(priceUsd: number): number | null {

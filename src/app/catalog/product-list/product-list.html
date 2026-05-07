@@ -115,7 +115,7 @@
 
             <p-carousel
               [value]="promotions()"
-              [numVisible]="4"
+              [numVisible]="3"
               [numScroll]="1"
               [circular]="promotions().length > 1"
               [autoplayInterval]="4200"
@@ -126,11 +126,11 @@
             >
               <ng-template #item let-promotion>
                 <article class="promotion-card">
-                  <span class="promotion-card__badge">{{ promotion.percent }}%</span>
+                  <span class="promotion-card__badge">{{ resolvePromotionPercent(promotion) }}%</span>
 
                   <div class="promotion-card__image-wrap">
                     <img
-                      [src]="resolveImage(promotion.file ?? '')"
+                      [src]="resolvePromotionImage(promotion)"
                       [alt]="promotion.title"
                       class="promotion-card__image"
                       loading="lazy"
