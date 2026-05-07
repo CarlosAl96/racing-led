@@ -230,13 +230,15 @@ export class NewPromotion implements OnInit, OnDestroy {
       return;
     }
 
+    const selectedProductIds = getPromotionSelectedIds(promotion);
+
     this.form.patchValue({
       title: promotion.title,
-      allProducts: normalizeIdsProds(promotion.idsProds).length === 0,
+      allProducts: selectedProductIds.length === 0,
       description: promotion.description,
-      percent: promotion.percent,
-      idsProds: uniqueIds(normalizeIdsProds(promotion.idsProds)),
-      file: promotion.file ?? '',
+      percent: normalizePromotionPercent(promotion.percent),
+      idsProds: selectedProductIds,
+      file: promotion.file ?? promotion.img ?? '',
     });
 
     this.productOptions.set(buildFallbackOptions(this.form.controls.idsProds.value));
@@ -323,6 +325,20 @@ function normalizeIdsProds(idsProds: Promotion['idsProds']): string[] {
   }
 
   return [];
+}
+
+function getPromotionSelectedIds(promotion: Promotion): string[] {
+  const products = promotion.products ?? [];
+
+  if (products.length > 0) {
+    return uniqueIds(products.map((product) => String(product.id).trim()));
+  }
+
+  return uniqueIds(normalizeIdsProds(promotion.idsProds));
+}
+
+function normalizePromotionPercent(percent: number): number {
+  return percent <= 1 ? percent * 100 : percent;
 }
 
 function buildFallbackOptions(ids: readonly PromotionProductSelection[]): ProductOption[] {

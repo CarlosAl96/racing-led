@@ -3,4 +3,6 @@ export interface QueryPagination {
   limit: number;
   search?: string;
   category?: string;
+  idDiscounts?: string;
+  forDiscounts?: boolean;
 }

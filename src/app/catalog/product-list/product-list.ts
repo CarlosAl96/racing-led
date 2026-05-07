@@ -12,14 +12,17 @@ import {
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
+import { CarouselModule } from 'primeng/carousel';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { finalize, Subscription } from 'rxjs';
 import { Product } from '../../core/models/product';
+import { Promotion } from '../../core/models/promotion';
 import { DolarAPIService } from '../../core/services/dolar-api.service';
 import { ProductsService } from '../../core/services/products.service';
 import { QuoteCartService } from '../../core/services/quote-cart.service';
 import { CatalogFiltersService } from '../../core/services/catalog-filters.service';
+import { PromotionsService } from '../../core/services/promotions.service';
 import { ShoppingCart } from '../shopping-cart/shopping-cart';
 
 interface CategoryOption {
@@ -31,6 +34,7 @@ interface CategoryOption {
   selector: 'app-product-list',
   imports: [
     ButtonModule,
+    CarouselModule,
     DecimalPipe,
     NgOptimizedImage,
     InputTextModule,
@@ -44,15 +48,18 @@ interface CategoryOption {
 })
 export class ProductList implements OnInit, OnDestroy {
   private readonly productsService = inject(ProductsService);
+  private readonly promotionsService = inject(PromotionsService);
   private readonly dolarApiService = inject(DolarAPIService);
   private readonly quoteCartService = inject(QuoteCartService);
   private readonly catalogFiltersService = inject(CatalogFiltersService);
   private readonly previewAnimationMs = 260;
   private readonly desktopBreakpoint = 992;
+  private readonly promotionsLimit = 500;
   private readonly resizeHandler = () => this.syncViewportMode();
   private observer?: IntersectionObserver;
   private closePreviewTimeout?: number;
   private productsRequestSubscription?: Subscription;
+  private promotionsRequestSubscription?: Subscription;
 
   @ViewChild('infiniteTrigger')
   private set infiniteTrigger(element: ElementRef<HTMLDivElement> | undefined) {
@@ -79,25 +86,51 @@ export class ProductList implements OnInit, OnDestroy {
     category: new FormControl('', { nonNullable: true }),
   });
   protected readonly products = signal<Product[]>([]);
+  protected readonly promotions = signal<Promotion[]>([]);
   protected readonly categories = signal<string[]>([]);
   protected readonly totalRecords = signal(0);
   protected readonly isLoading = signal(false);
   protected readonly isLoadingMore = signal(false);
+  protected readonly isLoadingPromotions = signal(false);
   protected readonly isLoadingCategories = signal(false);
   protected readonly hasMore = signal(true);
   protected readonly nextPage = signal(1);
   protected readonly exchangeRate = signal<number | null>(null);
   protected readonly appliedSearch = signal('');
   protected readonly appliedCategory = signal('');
+  protected readonly appliedForDiscounts = signal(false);
   protected readonly previewImageUrl = signal<string | null>(null);
   protected readonly previewImageName = signal<string>('');
   protected readonly isPreviewOpen = signal(false);
   protected readonly isMobile = signal(false);
   protected readonly hasProducts = computed(() => this.products().length > 0);
+  protected readonly hasPromotions = computed(() => this.promotions().length > 0);
   protected readonly isFiltersOpen = this.catalogFiltersService.isFiltersOpen;
   protected readonly hasActiveFilters = computed(
-    () => !!this.appliedSearch() || !!this.appliedCategory(),
+    () => !!this.appliedSearch() || !!this.appliedCategory() || this.appliedForDiscounts(),
   );
+  protected readonly promotionCarouselResponsiveOptions = [
+    {
+      breakpoint: '1360px',
+      numVisible: 4,
+      numScroll: 1,
+    },
+    {
+      breakpoint: '1200px',
+      numVisible: 3,
+      numScroll: 1,
+    },
+    {
+      breakpoint: '820px',
+      numVisible: 2,
+      numScroll: 1,
+    },
+    {
+      breakpoint: '560px',
+      numVisible: 1,
+      numScroll: 1,
+    },
+  ];
   protected readonly categoryOptions = computed<CategoryOption[]>(() => [
     { label: 'Todas las categorías', value: '' },
     ...this.categories().map((category) => ({
@@ -109,6 +142,7 @@ export class ProductList implements OnInit, OnDestroy {
     this.catalogFiltersService.showToggle();
     this.syncViewportMode();
     this.loadCategories();
+    this.loadPromotions();
     this.loadExchangeRate();
     this.loadNextPage();
 
@@ -120,6 +154,7 @@ export class ProductList implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.catalogFiltersService.hideToggle();
     this.productsRequestSubscription?.unsubscribe();
+    this.promotionsRequestSubscription?.unsubscribe();
     this.observer?.disconnect();
 
     if (this.closePreviewTimeout) {
@@ -150,6 +185,16 @@ export class ProductList implements OnInit, OnDestroy {
   protected onImageError(event: Event): void {
     const image = event.target as HTMLImageElement;
     image.src = this.fallbackImage;
+  }
+
+  protected promotionSummary(promotion: Promotion): string {
+    const description = promotion.description.trim();
+
+    if (description) {
+      return description;
+    }
+
+    return `Hasta ${promotion.percent}% de descuento`;
   }
 
   protected resolvePriceBs(priceUsd: number): number | null {
@@ -189,6 +234,25 @@ export class ProductList implements OnInit, OnDestroy {
     });
     this.appliedSearch.set('');
     this.appliedCategory.set('');
+    this.appliedForDiscounts.set(false);
+    this.resetProductsAndReload();
+  }
+
+  protected showDiscountedProducts(): void {
+    if (this.appliedForDiscounts()) {
+      return;
+    }
+
+    this.appliedForDiscounts.set(true);
+    this.resetProductsAndReload();
+  }
+
+  protected showAllProducts(): void {
+    if (!this.appliedForDiscounts()) {
+      return;
+    }
+
+    this.appliedForDiscounts.set(false);
     this.resetProductsAndReload();
   }
 
@@ -223,6 +287,7 @@ export class ProductList implements OnInit, OnDestroy {
         limit: this.rows,
         search: this.appliedSearch() || undefined,
         category: this.appliedCategory() || undefined,
+        forDiscounts: this.appliedForDiscounts() || undefined,
       })
       .pipe(
         finalize(() => {
@@ -254,6 +319,26 @@ export class ProductList implements OnInit, OnDestroy {
           }
 
           this.hasMore.set(false);
+        },
+      });
+  }
+
+  private loadPromotions(): void {
+    this.isLoadingPromotions.set(true);
+    this.promotionsRequestSubscription?.unsubscribe();
+
+    this.promotionsRequestSubscription = this.promotionsService
+      .getPromotions({
+        page: 1,
+        limit: this.promotionsLimit,
+      })
+      .pipe(finalize(() => this.isLoadingPromotions.set(false)))
+      .subscribe({
+        next: (response) => {
+          this.promotions.set(response.data ?? []);
+        },
+        error: () => {
+          this.promotions.set([]);
         },
       });
   }

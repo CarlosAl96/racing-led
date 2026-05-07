@@ -31,6 +31,10 @@ export class ProductsService {
       httpParams = httpParams.set('category', query.category);
     }
 
+    if (query.forDiscounts) {
+      httpParams = httpParams.set('forDiscounts', 'true');
+    }
+
     const options = httpParams
       ? { params: httpParams, headers: new HttpHeaders() }
       : { headers: new HttpHeaders() };

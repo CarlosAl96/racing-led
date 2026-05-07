@@ -113,7 +113,7 @@
 						<span class="p-column-title">Imagen</span>
 						<div class="promotion-thumbnail-frame">
 							<img
-								[src]="resolveImage(promotion.file)"
+								[src]="resolvePromotionImage(promotion)"
 								[alt]="promotion.title"
 								class="promotion-thumbnail"
 								loading="lazy"
@@ -130,15 +130,14 @@
 					</td>
 					<td>
 						<span class="p-column-title">Descuento</span>
-						<span class="promotion-percent">{{ promotion.percent }}%</span>
+						<span class="promotion-percent">{{ resolvePercent(promotion.percent) }}%</span>
 					</td>
 					<td>
 						<span class="p-column-title">Productos</span>
 						<div class="promotion-products-cell">
 							<span class="promotion-products-cell__count">
-								{{ resolveProductsCount(promotion.idsProds) }} vinculados
+								{{ resolveProductsCount(promotion) }} vinculados
 							</span>
-							<span class="cell-muted">{{ resolveIdsProds(promotion.idsProds) }}</span>
 						</div>
 					</td>
 					<td>

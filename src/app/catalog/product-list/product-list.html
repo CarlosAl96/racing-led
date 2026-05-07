@@ -91,6 +91,89 @@
           </form>
         }
 
+        @if (isLoadingPromotions()) {
+          <section class="promotions-strip" aria-label="Promociones destacadas">
+            <div
+              class="loading-parts loading-parts-promotions"
+              role="status"
+              aria-live="polite"
+              aria-label="Cargando promociones"
+            >
+              <span class="loading-parts-wheel" aria-hidden="true">
+                <i class="pi pi-percentage"></i>
+              </span>
+              <span class="loading-parts-text">Cargando promociones...</span>
+            </div>
+          </section>
+        } @else if (hasPromotions()) {
+          <section class="promotions-strip" aria-labelledby="promotions-strip-title">
+            <div class="promotions-strip__header">
+              <p id="promotions-strip-title" class="promotions-strip__title m-0">
+                Hola, te puede interesar...
+              </p>
+            </div>
+
+            <p-carousel
+              [value]="promotions()"
+              [numVisible]="4"
+              [numScroll]="1"
+              [circular]="promotions().length > 1"
+              [autoplayInterval]="4200"
+              [showIndicators]="false"
+              [showNavigators]="promotions().length > 1"
+              [responsiveOptions]="promotionCarouselResponsiveOptions"
+              styleClass="promotions-carousel"
+            >
+              <ng-template #item let-promotion>
+                <article class="promotion-card">
+                  <span class="promotion-card__badge">{{ promotion.percent }}%</span>
+
+                  <div class="promotion-card__image-wrap">
+                    <img
+                      [src]="resolveImage(promotion.file ?? '')"
+                      [alt]="promotion.title"
+                      class="promotion-card__image"
+                      loading="lazy"
+                      (error)="onImageError($event)"
+                    />
+                  </div>
+
+                  <div class="promotion-card__content">
+                    <h3 class="promotion-card__title m-0">{{ promotion.title }}</h3>
+                    <p class="promotion-card__description m-0">
+                      {{ promotionSummary(promotion) }}
+                    </p>
+                  </div>
+                </article>
+              </ng-template>
+            </p-carousel>
+
+            <div class="promotions-strip__actions">
+              <button
+                pButton
+                type="button"
+                [text]="true"
+                class="promotions-strip__action promotions-strip__action--discounts"
+                label="Ver productos con descuentos"
+                icon="pi pi-tags"
+                [severity]="appliedForDiscounts() ? 'contrast' : 'warn'"
+                (click)="showDiscountedProducts()"
+              ></button>
+
+              <button
+                pButton
+                type="button"
+                [text]="true"
+                class="promotions-strip__action"
+                label="Ver todos"
+                icon="pi pi-th-large"
+                [severity]="appliedForDiscounts() ? 'secondary' : 'contrast'"
+                (click)="showAllProducts()"
+              ></button>
+            </div>
+          </section>
+        }
+
         <div class="catalog-results__products">
           <div class="catalog-meta">
             <span>{{ totalRecords() }} repuestos disponibles</span>

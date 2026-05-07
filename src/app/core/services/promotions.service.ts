@@ -42,13 +42,13 @@ export class PromotionsService {
       .pipe(catchError(this.handleError));
   }
 
-  public updatePromotion(form: FormData, id: number): Observable<unknown> {
+  public updatePromotion(form: FormData, id: string | number): Observable<unknown> {
     return this.http
       .put<unknown>(this.updatePromotionUrl + id, form)
       .pipe(catchError(this.handleError));
   }
 
-  public deletePromotion(id: number): Observable<unknown> {
+  public deletePromotion(id: string | number): Observable<unknown> {
     return this.http
       .delete<unknown>(this.deletePromotionUrl + id)
       .pipe(catchError(this.handleError));

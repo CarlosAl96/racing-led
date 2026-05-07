@@ -13,42 +13,43 @@ describe('NewPromotion', () => {
   let fixture: ComponentFixture<NewPromotion>;
   let componentState: any;
 
-  beforeEach(async () => {
+  const buildProductsResponse = () => ({
+    data: [
+      {
+        id: 'f5dd65de-027a-4687-97b3-f5623fcfeee4',
+        name: 'Producto 7',
+        sku: 'SKU-7',
+        price: 10,
+        picture: '',
+        updated_at: '',
+        created_at: '',
+      },
+      {
+        id: 'ae46b26e-9ef0-4df7-bc57-a172de83e862',
+        name: 'Producto 12',
+        sku: 'SKU-12',
+        price: 10,
+        picture: '',
+        updated_at: '',
+        created_at: '',
+      },
+    ],
+    pagination: {
+      total_records: 2,
+      current_page: 1,
+      limit: 50,
+      next_page: null,
+    },
+  });
+
+  async function createComponent(dialogData: object = {}): Promise<void> {
     await TestBed.configureTestingModule({
       imports: [NewPromotion],
       providers: [
         {
           provide: ProductsService,
           useValue: {
-            getProducts: () =>
-              of({
-                data: [
-                  {
-                    id: 'f5dd65de-027a-4687-97b3-f5623fcfeee4',
-                    name: 'Producto 7',
-                    sku: 'SKU-7',
-                    price: 10,
-                    picture: '',
-                    updated_at: '',
-                    created_at: '',
-                  },
-                  {
-                    id: 'ae46b26e-9ef0-4df7-bc57-a172de83e862',
-                    name: 'Producto 12',
-                    sku: 'SKU-12',
-                    price: 10,
-                    picture: '',
-                    updated_at: '',
-                    created_at: '',
-                  },
-                ],
-                pagination: {
-                  total_records: 2,
-                  current_page: 1,
-                  limit: 50,
-                  next_page: null,
-                },
-              }),
+            getProducts: () => of(buildProductsResponse()),
           },
         },
         {
@@ -73,7 +74,7 @@ describe('NewPromotion', () => {
         {
           provide: DynamicDialogConfig,
           useValue: {
-            data: {},
+            data: dialogData,
           },
         },
       ],
@@ -83,6 +84,10 @@ describe('NewPromotion', () => {
     componentState = fixture.componentInstance as any;
     fixture.detectChanges();
     await fixture.whenStable();
+  }
+
+  beforeEach(async () => {
+    await createComponent();
   });
 
   it('builds idsProds from heterogeneous multiselect values', () => {
@@ -127,5 +132,53 @@ describe('NewPromotion', () => {
       '["f5dd65de-027a-4687-97b3-f5623fcfeee4","ae46b26e-9ef0-4df7-bc57-a172de83e862"]',
     );
     expect(formData.getAll('idsProds[]')).toEqual([]);
+  });
+
+  it('preselects linked products when editing a promotion from the current api shape', async () => {
+    TestBed.resetTestingModule();
+
+    await createComponent({
+      promotion: {
+        id: 'promo-1',
+        title: 'Promo editada',
+        description: 'Descripcion',
+        percent: 0.1,
+        img: 'https://example.com/promo.webp',
+        products: [
+          { id: 'f5dd65de-027a-4687-97b3-f5623fcfeee4' },
+          { id: 'ae46b26e-9ef0-4df7-bc57-a172de83e862' },
+        ],
+        created_at: '',
+        updated_at: '',
+      },
+    });
+
+    expect(componentState.form.controls.allProducts.value).toBe(false);
+    expect(componentState.form.controls.idsProds.value).toEqual([
+      'f5dd65de-027a-4687-97b3-f5623fcfeee4',
+      'ae46b26e-9ef0-4df7-bc57-a172de83e862',
+    ]);
+    expect(componentState.form.controls.percent.value).toBe(10);
+    expect(componentState.form.controls.file.value).toBe('https://example.com/promo.webp');
+  });
+
+  it('selects all products mode when an edited promotion has no linked products', async () => {
+    TestBed.resetTestingModule();
+
+    await createComponent({
+      promotion: {
+        id: 'promo-2',
+        title: 'Promo global',
+        description: 'Descripcion',
+        percent: 0.2,
+        products: [],
+        created_at: '',
+        updated_at: '',
+      },
+    });
+
+    expect(componentState.form.controls.allProducts.value).toBe(true);
+    expect(componentState.form.controls.idsProds.value).toEqual([]);
+    expect(componentState.form.controls.percent.value).toBe(20);
   });
 });

@@ -53,7 +53,7 @@ export class Promotions implements OnInit, OnDestroy {
   protected readonly promotions = signal<Promotion[]>([]);
   protected readonly totalRecords = signal(0);
   protected readonly isLoading = signal(false);
-  protected readonly deletingPromotionId = signal<number | null>(null);
+  protected readonly deletingPromotionId = signal<string | number | null>(null);
   protected readonly first = signal(0);
   protected readonly appliedSearch = signal('');
   protected readonly hasPromotions = computed(() => this.promotions().length > 0);
@@ -118,7 +118,9 @@ export class Promotions implements OnInit, OnDestroy {
     this.loadPromotions(this.getCurrentPage());
   }
 
-  protected resolveImage(urlImage?: string | null): string {
+  protected resolvePromotionImage(promotion: Promotion): string {
+    const urlImage = promotion.img ?? promotion.file;
+
     if (!urlImage?.trim()) {
       return this.fallbackImage;
     }
@@ -131,13 +133,23 @@ export class Promotions implements OnInit, OnDestroy {
     image.src = this.fallbackImage;
   }
 
-  protected resolveIdsProds(idsProds: Promotion['idsProds']): string {
-    const normalized = normalizeIdsProds(idsProds);
+  protected resolveIdsProds(promotion: Promotion): string {
+    const normalized = getPromotionProductIds(promotion);
     return normalized.length ? normalized.join(', ') : 'Sin productos vinculados';
   }
 
-  protected resolveProductsCount(idsProds: Promotion['idsProds']): number {
-    return normalizeIdsProds(idsProds).length;
+  protected resolveProductsCount(promotion: Promotion): number {
+    return getPromotionProductIds(promotion).length;
+  }
+
+  protected resolvePercent(percent: number): string {
+    const normalizedPercent = percent <= 1 ? percent * 100 : percent;
+
+    if (Number.isInteger(normalizedPercent)) {
+      return String(normalizedPercent);
+    }
+
+    return normalizedPercent.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
   }
 
   protected confirmDeletePromotion(promotion: Promotion): void {
@@ -227,4 +239,14 @@ function normalizeIdsProds(idsProds: Promotion['idsProds']): string[] {
   }
 
   return [];
+}
+
+function getPromotionProductIds(promotion: Promotion): string[] {
+  const products = promotion.products ?? [];
+
+  if (products.length > 0) {
+    return products.map((product) => String(product.id).trim()).filter(Boolean);
+  }
+
+  return normalizeIdsProds(promotion.idsProds);
 }
