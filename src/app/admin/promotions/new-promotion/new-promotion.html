@@ -23,6 +23,84 @@
     </div>
 
     <div class="new-promotion-form__field">
+      <label for="promotion-ids-prods">Productos *</label>
+      <div class="products-mode-toggle" role="group" aria-label="Modo de selección de productos">
+        <button
+          pButton
+          type="button"
+          label="Todos"
+          severity="secondary"
+          [outlined]="!form.controls.allProducts.value"
+          [class.products-mode-toggle__button--active]="form.controls.allProducts.value"
+          (click)="setProductsMode(true)"
+        ></button>
+        <button
+          pButton
+          type="button"
+          label="Seleccionar productos"
+          severity="secondary"
+          [outlined]="form.controls.allProducts.value"
+          [class.products-mode-toggle__button--active]="!form.controls.allProducts.value"
+          (click)="setProductsMode(false)"
+        ></button>
+      </div>
+
+      @if (!form.controls.allProducts.value) {
+        <p-multiselect
+          inputId="promotion-ids-prods"
+          formControlName="idsProds"
+          [options]="productOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [filter]="true"
+          filterBy="label,sku"
+          [showToggleAll]="false"
+          [loading]="isLoadingProducts()"
+          [display]="'comma'"
+          [displaySelectedLabel]="true"
+          [maxSelectedLabels]="0"
+          [resetFilterOnHide]="true"
+          selectedItemsLabel="{0} productos seleccionados"
+          placeholder="Selecciona productos"
+          class="new-promotion-form__product-select"
+          (onPanelShow)="loadProductsOnPanelShow()"
+          (onFilter)="onProductsFilter($event)"
+        >
+          <ng-template let-selectedOptions #selectedItems>
+            @if (selectedOptions?.length) {
+              {{
+                selectedOptions.length === 1
+                  ? '1 producto seleccionado'
+                  : `${selectedOptions.length} productos seleccionados`
+              }}
+            } @else {
+              Selecciona productos
+            }
+          </ng-template>
+
+          <ng-template let-option #item>
+            <div class="product-option">
+              <span class="product-option__name">{{ option.label }}</span>
+              <span class="product-option__meta">SKU: {{ option.sku }}</span>
+            </div>
+          </ng-template>
+        </p-multiselect>
+
+        <small class="field-note">
+          Busca productos por nombre o SKU. Se cargan hasta 50 resultados por búsqueda.
+        </small>
+      } @else {
+        <div class="products-all-state">
+          La promoción aplicará a todos los productos. Se enviará `idsProds: []`.
+        </div>
+      }
+
+      @if (isControlInvalid('idsProds')) {
+        <small class="field-error">Debes elegir `Todos` o seleccionar al menos un producto.</small>
+      }
+    </div>
+
+    <div class="new-promotion-form__field">
       <label for="promotion-description">Descripción *</label>
       <textarea
         id="promotion-description"
@@ -51,21 +129,6 @@
       ></p-inputnumber>
       @if (isControlInvalid('percent')) {
         <small class="field-error">El porcentaje es obligatorio y debe estar entre 0 y 100.</small>
-      }
-    </div>
-
-    <div class="new-promotion-form__field">
-      <label for="promotion-ids-prods">IDs de productos *</label>
-      <textarea
-        id="promotion-ids-prods"
-        pTextarea
-        formControlName="idsProds"
-        rows="3"
-        placeholder="Ej. 10, 15, 21"
-      ></textarea>
-      <small class="field-note">Ingresa los IDs separados por comas.</small>
-      @if (isControlInvalid('idsProds')) {
-        <small class="field-error">Debes indicar IDs numéricos separados por comas.</small>
       }
     </div>
 
