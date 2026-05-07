@@ -242,6 +242,30 @@
   gap: 0.9rem;
   min-height: 100%;
   padding: 0.5rem 0.75rem 0.8rem;
+  border-radius: var(--p-border-radius-xl);
+  border: 1px solid transparent;
+  cursor: pointer;
+  outline: none;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.promotion-card:hover {
+  transform: translateY(-2px);
+}
+
+.promotion-card:focus-visible {
+  border-color: color-mix(in srgb, #ffd44d 76%, white 24%);
+  box-shadow: 0 0 0 3px color-mix(in srgb, #ffd44d 38%, transparent);
+}
+
+.promotion-card--selected {
+  border-color: color-mix(in srgb, #ffd44d 82%, white 18%);
+  background: color-mix(in srgb, #ffd44d 10%, transparent);
+  box-shadow: 0 16px 32px color-mix(in srgb, #f59e0b 18%, transparent);
 }
 
 .promotion-card__badge {
@@ -250,8 +274,9 @@
   left: 0.3rem;
   z-index: 1;
   min-width: 3rem;
+  min-height: 3rem;
   padding: 0.45rem 0.7rem;
-  border-radius: 999px;
+  border-radius: 0 50% 50% 50%;
   background: #ffd44d;
   color: #3f2b00;
   font-size: 0.95rem;
@@ -259,6 +284,9 @@
   line-height: 1;
   text-align: center;
   box-shadow: 0 10px 18px color-mix(in srgb, #f59e0b 26%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .promotion-card__image-wrap {
@@ -283,6 +311,10 @@
   border-radius: var(--p-border-radius-lg);
   background: #ffd44d;
   color: #3f2b00;
+}
+
+.promotion-card--selected .promotion-card__content {
+  background: linear-gradient(135deg, #ffd44d, #ffe58e);
 }
 
 .promotion-card__title {
@@ -409,6 +441,7 @@
 }
 
 .product-image-wrap {
+  position: relative;
   width: 100%;
   aspect-ratio: 4 / 3;
   border-radius: var(--p-border-radius-lg);
@@ -440,6 +473,27 @@
   gap: 0.35rem;
 }
 
+.product-discount-badge {
+  position: absolute;
+  top: 0.45rem;
+  left: 0.45rem;
+  z-index: 1;
+  min-width: 3rem;
+  min-height: 3rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 0 50% 50% 50%;
+  background: #ffd44d;
+  color: #3f2b00;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 18px color-mix(in srgb, #f59e0b 26%, transparent);
+}
+
 .product-sku,
 .product-category {
   color: var(--p-text-muted-color);
@@ -457,6 +511,23 @@
   color: var(--p-primary-600);
   font-size: 1.05rem;
   font-weight: 700;
+}
+
+.product-price-stack {
+  display: grid;
+  gap: 0.08rem;
+}
+
+.product-price-original {
+  color: var(--p-text-muted-color);
+  font-size: 0.8rem;
+  text-decoration: line-through;
+}
+
+.product-price-discount-note {
+  color: var(--p-text-muted-color);
+  font-size: 0.74rem;
+  line-height: 1.2;
 }
 
 .product-price-row {
@@ -748,6 +819,15 @@
     gap: 0.22rem;
   }
 
+  .product-discount-badge {
+    top: 0.3rem;
+    left: 0.3rem;
+    min-width: 2.55rem;
+    min-height: 2.55rem;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.78rem;
+  }
+
   .product-price-row {
     margin-top: auto;
     padding-top: 0.2rem;
@@ -767,6 +847,11 @@
 
   .product-price {
     font-size: 0.92rem;
+  }
+
+  .product-price-original,
+  .product-price-discount-note {
+    font-size: 0.68rem;
   }
 
   :host ::ng-deep .add-cart-icon-button .p-button {

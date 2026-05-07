@@ -117,15 +117,25 @@
               [value]="promotions()"
               [numVisible]="3"
               [numScroll]="1"
-              [circular]="promotions().length > 1"
-              [autoplayInterval]="4200"
+              [circular]="selectedPromotionId() === null && promotions().length > 1"
+              [autoplayInterval]="selectedPromotionId() === null ? 4200 : 0"
               [showIndicators]="false"
               [showNavigators]="promotions().length > 1"
               [responsiveOptions]="promotionCarouselResponsiveOptions"
               styleClass="promotions-carousel"
             >
               <ng-template #item let-promotion>
-                <article class="promotion-card">
+                <article
+                  class="promotion-card"
+                  [class.promotion-card--selected]="isPromotionSelected(promotion)"
+                  tabindex="0"
+                  role="button"
+                  [attr.aria-pressed]="isPromotionSelected(promotion)"
+                  [attr.aria-label]="'Ver productos de la promoción ' + promotion.title"
+                  (click)="selectPromotion(promotion)"
+                  (keydown.enter)="selectPromotion(promotion)"
+                  (keydown.space)="selectPromotion(promotion)"
+                >
                   <span class="promotion-card__badge">{{ resolvePromotionPercent(promotion) }}%</span>
 
                   <div class="promotion-card__image-wrap">
@@ -196,6 +206,10 @@
                     (keydown.enter)="openImagePreview(resolveImage(product.picture), product.name)"
                     (keydown.space)="openImagePreview(resolveImage(product.picture), product.name)"
                   >
+                    @if (hasDiscount(product)) {
+                      <span class="product-discount-badge">{{ resolveDiscountPercent(product) }}%</span>
+                    }
+
                     <img
                       [src]="resolveImage(product.picture)"
                       [alt]="product.name"
@@ -211,13 +225,32 @@
                     <p class="product-category m-0">{{ product.category || 'Sin categoría' }}</p>
 
                     <div class="product-price-row">
-                      <p class="product-price m-0">
-                        @if (resolvePriceBs(product.price); as priceBs) {
-                          Bs {{ priceBs | number: '1.0-2' }}
-                        } @else {
-                          Bs --
+                      <div class="product-price-stack">
+                        @if (hasDiscount(product)) {
+                          <p class="product-price-original m-0">
+                            @if (resolvePriceBs(product.price); as originalPriceBs) {
+                              Bs {{ originalPriceBs | number: '1.0-2' }}
+                            } @else {
+                              Bs --
+                            }
+                          </p>
                         }
-                      </p>
+
+                        <p class="product-price m-0">
+                          @if (resolvePriceBs(resolveDiscountedPriceUsd(product)); as priceBs) {
+                            Bs {{ priceBs | number: '1.0-2' }}
+                          } @else {
+                            Bs --
+                          }
+                        </p>
+
+                        @if (hasDiscount(product)) {
+                          <p class="product-price-discount-note m-0">
+                            Antes USD {{ product.price | number: '1.0-2' }} | Ahora USD
+                            {{ resolveDiscountedPriceUsd(product) | number: '1.0-2' }}
+                          </p>
+                        }
+                      </div>
 
                       @if (isMobile()) {
                         <button

@@ -11,6 +11,12 @@ import { DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { DrawerModule } from 'primeng/drawer';
+import {
+  Product,
+  hasProductDiscount,
+  resolveProductDiscountedPriceUsd,
+  resolveProductDiscountPercent,
+} from '../../core/models/product';
 import { DolarAPIService } from '../../core/services/dolar-api.service';
 import { QuoteCartService } from '../../core/services/quote-cart.service';
 
@@ -105,15 +111,15 @@ export class ShoppingCart implements OnInit {
     this.quoteCartService.setMobileOpen(isOpen);
   }
 
-  protected incrementQuantity(productId: number): void {
+  protected incrementQuantity(productId: string | number): void {
     this.quoteCartService.incrementQuantity(productId);
   }
 
-  protected decrementQuantity(productId: number): void {
+  protected decrementQuantity(productId: string | number): void {
     this.quoteCartService.decrementQuantity(productId);
   }
 
-  protected removeProduct(productId: number): void {
+  protected removeProduct(productId: string | number): void {
     this.quoteCartService.removeProduct(productId);
   }
 
@@ -137,6 +143,28 @@ export class ShoppingCart implements OnInit {
 
   protected resolveLineTotalUsd(priceUsd: number, quantity: number): number {
     return priceUsd * quantity;
+  }
+
+  protected hasDiscount(product: Product): boolean {
+    return hasProductDiscount(product);
+  }
+
+  protected resolveDiscountPercent(product: Product): string {
+    const discountPercent = resolveProductDiscountPercent(product);
+
+    if (Number.isInteger(discountPercent)) {
+      return String(discountPercent);
+    }
+
+    return discountPercent.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
+  }
+
+  protected resolveDiscountedUnitPriceUsd(product: Product): number {
+    return resolveProductDiscountedPriceUsd(product);
+  }
+
+  protected resolveLineDiscountedTotalUsd(product: Product, quantity: number): number {
+    return this.resolveDiscountedUnitPriceUsd(product) * quantity;
   }
 
   protected resolveLineTotalBs(priceUsd: number, quantity: number): number | null {
@@ -170,16 +198,25 @@ export class ShoppingCart implements OnInit {
 
   private buildWhatsAppMessage(): string {
     const productLines = this.items().map((item, index) => {
-      const subtotalUsd = this.resolveLineTotalUsd(item.product.price, item.quantity);
-      const subtotalBs = this.resolveLineTotalBs(item.product.price, item.quantity);
+      const subtotalUsd = this.resolveLineDiscountedTotalUsd(item.product, item.quantity);
+      const subtotalBs = this.resolveLineTotalBs(subtotalUsd, 1);
       const category = item.product.category || 'Sin categoría';
+      const discountPercent = this.resolveDiscountPercent(item.product);
+      const discountedUnitPrice = this.resolveDiscountedUnitPriceUsd(item.product);
+      const hasDiscount = this.hasDiscount(item.product);
 
       return [
         `${index + 1}. ${item.product.name}`,
         `SKU: ${item.product.sku}`,
         `Categoría: ${category}`,
         `Cantidad: ${item.quantity}`,
-        `Precio unitario USD: ${item.product.price.toFixed(2)}`,
+        `Descuento: ${discountPercent}%`,
+        hasDiscount
+          ? `Precio original USD: ${item.product.price.toFixed(2)}`
+          : `Precio original USD: ${item.product.price.toFixed(2)}`,
+        hasDiscount
+          ? `Precio con descuento USD: ${discountedUnitPrice.toFixed(2)}`
+          : `Precio con descuento USD: ${discountedUnitPrice.toFixed(2)}`,
         `Subtotal USD: ${subtotalUsd.toFixed(2)}`,
         subtotalBs === null ? '' : `Subtotal Bs: ${subtotalBs.toFixed(2)}`,
       ]

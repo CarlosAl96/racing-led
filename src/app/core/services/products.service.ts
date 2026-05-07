@@ -31,6 +31,10 @@ export class ProductsService {
       httpParams = httpParams.set('category', query.category);
     }
 
+    if (query.idDiscounts) {
+      httpParams = httpParams.set('idDiscounts', query.idDiscounts);
+    }
+
     if (query.forDiscounts) {
       httpParams = httpParams.set('forDiscounts', 'true');
     }
@@ -54,11 +58,11 @@ export class ProductsService {
     return this.http.post<any>(this.createProductUrl, form).pipe(catchError(this.handleError));
   }
 
-  public updateProduct(form: FormData, id: number): Observable<any> {
+  public updateProduct(form: FormData, id: string | number): Observable<any> {
     return this.http.put<any>(this.updateProductUrl + id, form).pipe(catchError(this.handleError));
   }
 
-  public deleteProduct(id: number): Observable<any> {
+  public deleteProduct(id: string | number): Observable<any> {
     return this.http.delete<any>(this.deleteProductUrl + id).pipe(catchError(this.handleError));
   }
 

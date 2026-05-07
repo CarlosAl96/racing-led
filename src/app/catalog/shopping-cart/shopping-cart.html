@@ -4,13 +4,19 @@
       <div class="cart-items" role="list">
         @for (item of items(); track item.product.id) {
           <article class="cart-item" role="listitem">
-            <img
-              [src]="resolveImage(item.product.picture)"
-              [alt]="item.product.name"
-              class="cart-item-image"
-              loading="lazy"
-              (error)="onImageError($event)"
-            />
+            <div class="cart-item-image-wrap">
+              @if (hasDiscount(item.product)) {
+                <span class="cart-item-discount-badge">{{ resolveDiscountPercent(item.product) }}%</span>
+              }
+
+              <img
+                [src]="resolveImage(item.product.picture)"
+                [alt]="item.product.name"
+                class="cart-item-image"
+                loading="lazy"
+                (error)="onImageError($event)"
+              />
+            </div>
 
             <div class="cart-item-content">
               <p class="cart-item-sku m-0">SKU: {{ item.product.sku }}</p>
@@ -20,8 +26,14 @@
               </p>
 
               <div class="cart-item-prices">
-                <span>USD {{ item.product.price | number: '1.0-2' }}</span>
-                @if (resolveLineTotalBs(item.product.price, item.quantity); as lineTotalBs) {
+                @if (hasDiscount(item.product)) {
+                  <span class="cart-item-price-original"
+                    >USD {{ item.product.price | number: '1.0-2' }}</span
+                  >
+                }
+
+                <span>USD {{ resolveDiscountedUnitPriceUsd(item.product) | number: '1.0-2' }}</span>
+                @if (resolveLineTotalBs(resolveDiscountedUnitPriceUsd(item.product), item.quantity); as lineTotalBs) {
                   <span>Bs {{ lineTotalBs | number: '1.0-2' }}</span>
                 }
               </div>
@@ -56,7 +68,7 @@
 
               <div class="cart-item-actions">
                 <p class="cart-line-total m-0">
-                  USD {{ resolveLineTotalUsd(item.product.price, item.quantity) | number: '1.0-2' }}
+                  USD {{ resolveLineDiscountedTotalUsd(item.product, item.quantity) | number: '1.0-2' }}
                 </p>
                 <button
                   pButton

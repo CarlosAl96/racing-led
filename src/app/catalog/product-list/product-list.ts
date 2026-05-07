@@ -16,7 +16,12 @@ import { CarouselModule } from 'primeng/carousel';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { finalize, Subscription } from 'rxjs';
-import { Product } from '../../core/models/product';
+import {
+  Product,
+  hasProductDiscount,
+  resolveProductDiscountedPriceUsd,
+  resolveProductDiscountPercent,
+} from '../../core/models/product';
 import { Promotion } from '../../core/models/promotion';
 import { DolarAPIService } from '../../core/services/dolar-api.service';
 import { ProductsService } from '../../core/services/products.service';
@@ -99,6 +104,7 @@ export class ProductList implements OnInit, OnDestroy {
   protected readonly appliedSearch = signal('');
   protected readonly appliedCategory = signal('');
   protected readonly appliedForDiscounts = signal(false);
+  protected readonly selectedPromotionId = signal<string | number | null>(null);
   protected readonly previewImageUrl = signal<string | null>(null);
   protected readonly previewImageName = signal<string>('');
   protected readonly isPreviewOpen = signal(false);
@@ -107,7 +113,14 @@ export class ProductList implements OnInit, OnDestroy {
   protected readonly hasPromotions = computed(() => this.promotions().length > 0);
   protected readonly isFiltersOpen = this.catalogFiltersService.isFiltersOpen;
   protected readonly hasActiveFilters = computed(
-    () => !!this.appliedSearch() || !!this.appliedCategory() || this.appliedForDiscounts(),
+    () =>
+      !!this.appliedSearch() ||
+      !!this.appliedCategory() ||
+      this.appliedForDiscounts() ||
+      this.selectedPromotionId() !== null,
+  );
+  protected readonly selectedPromotion = computed(
+    () => this.promotions().find((promotion) => promotion.id === this.selectedPromotionId()) ?? null,
   );
   protected readonly promotionCarouselResponsiveOptions = [
     {
@@ -211,9 +224,41 @@ export class ProductList implements OnInit, OnDestroy {
     return normalizedPercent.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
   }
 
+  protected isPromotionSelected(promotion: Promotion): boolean {
+    return this.selectedPromotionId() === promotion.id;
+  }
+
+  protected selectPromotion(promotion: Promotion): void {
+    if (this.isPromotionSelected(promotion)) {
+      return;
+    }
+
+    this.selectedPromotionId.set(promotion.id);
+    this.appliedForDiscounts.set(false);
+    this.resetProductsAndReload();
+  }
+
   protected resolvePriceBs(priceUsd: number): number | null {
     const rate = this.exchangeRate();
     return rate === null ? null : priceUsd * rate;
+  }
+
+  protected hasDiscount(product: Product): boolean {
+    return hasProductDiscount(product);
+  }
+
+  protected resolveDiscountPercent(product: Product): string {
+    const discountPercent = resolveProductDiscountPercent(product);
+
+    if (Number.isInteger(discountPercent)) {
+      return String(discountPercent);
+    }
+
+    return discountPercent.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
+  }
+
+  protected resolveDiscountedPriceUsd(product: Product): number {
+    return resolveProductDiscountedPriceUsd(product);
   }
 
   protected openImagePreview(imageUrl: string, imageName: string): void {
@@ -249,6 +294,7 @@ export class ProductList implements OnInit, OnDestroy {
     this.appliedSearch.set('');
     this.appliedCategory.set('');
     this.appliedForDiscounts.set(false);
+    this.selectedPromotionId.set(null);
     this.resetProductsAndReload();
   }
 
@@ -257,15 +303,17 @@ export class ProductList implements OnInit, OnDestroy {
       return;
     }
 
+    this.selectedPromotionId.set(null);
     this.appliedForDiscounts.set(true);
     this.resetProductsAndReload();
   }
 
   protected showAllProducts(): void {
-    if (!this.appliedForDiscounts()) {
+    if (!this.appliedForDiscounts() && this.selectedPromotionId() === null) {
       return;
     }
 
+    this.selectedPromotionId.set(null);
     this.appliedForDiscounts.set(false);
     this.resetProductsAndReload();
   }
@@ -301,6 +349,7 @@ export class ProductList implements OnInit, OnDestroy {
         limit: this.rows,
         search: this.appliedSearch() || undefined,
         category: this.appliedCategory() || undefined,
+        idDiscounts: this.selectedPromotionId() !== null ? String(this.selectedPromotionId()) : undefined,
         forDiscounts: this.appliedForDiscounts() || undefined,
       })
       .pipe(

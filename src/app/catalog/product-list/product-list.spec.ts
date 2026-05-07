@@ -29,6 +29,8 @@ describe('ProductList', () => {
     applyFilters: () => void;
     showDiscountedProducts: () => void;
     showAllProducts: () => void;
+    selectPromotion: (promotion: { id: string | number; title: string; description: string; percent: number }) => void;
+    promotions: () => Array<{ id: string | number; title: string; description: string; percent: number }>;
   };
 
   beforeEach(async () => {
@@ -193,6 +195,42 @@ describe('ProductList', () => {
       limit: 20,
       search: undefined,
       category: undefined,
+      forDiscounts: undefined,
+    });
+  });
+
+  it('should request products using idDiscounts when a promotion is selected', () => {
+    const productList = component as unknown as ProductListState;
+    const [promotion] = productList.promotions();
+
+    getProductsSpy.mockClear();
+    productList.selectPromotion(promotion);
+
+    expect(getProductsSpy).toHaveBeenCalledWith({
+      page: 1,
+      limit: 20,
+      search: undefined,
+      category: undefined,
+      idDiscounts: '1',
+      forDiscounts: undefined,
+    });
+  });
+
+  it('should clear selected promotion when showing all products', () => {
+    const productList = component as unknown as ProductListState;
+    const [promotion] = productList.promotions();
+
+    productList.selectPromotion(promotion);
+    getProductsSpy.mockClear();
+
+    productList.showAllProducts();
+
+    expect(getProductsSpy).toHaveBeenCalledWith({
+      page: 1,
+      limit: 20,
+      search: undefined,
+      category: undefined,
+      idDiscounts: undefined,
       forDiscounts: undefined,
     });
   });

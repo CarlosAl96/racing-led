@@ -75,7 +75,7 @@ export class Products implements OnInit, OnDestroy {
   protected readonly exchangeRate = signal<number | null>(null);
   protected readonly isLoading = signal(false);
   protected readonly isLoadingCategories = signal(false);
-  protected readonly deletingProductId = signal<number | null>(null);
+  protected readonly deletingProductId = signal<string | number | null>(null);
   protected readonly first = signal(0);
   protected readonly appliedSearch = signal('');
   protected readonly appliedCategory = signal('');

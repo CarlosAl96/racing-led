@@ -1,6 +1,6 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { QuoteCartItem } from '../models/quote-cart-item';
-import { Product } from '../models/product';
+import { Product, resolveProductDiscountedPriceUsd } from '../models/product';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +15,10 @@ export class QuoteCartService {
     this.items().reduce((total, item) => total + item.quantity, 0),
   );
   readonly totalAmountUsd = computed(() =>
-    this.items().reduce((total, item) => total + item.product.price * item.quantity, 0),
+    this.items().reduce(
+      (total, item) => total + resolveProductDiscountedPriceUsd(item.product) * item.quantity,
+      0,
+    ),
   );
 
   addProduct(product: Product): void {
@@ -31,7 +34,7 @@ export class QuoteCartService {
     this.emitAddPulse();
   }
 
-  incrementQuantity(productId: number): void {
+  incrementQuantity(productId: string | number): void {
     const item = this.items().find((currentItem) => currentItem.product.id === productId);
 
     if (!item) {
@@ -41,7 +44,7 @@ export class QuoteCartService {
     this.setItemQuantity(productId, item.quantity + 1);
   }
 
-  decrementQuantity(productId: number): void {
+  decrementQuantity(productId: string | number): void {
     const item = this.items().find((currentItem) => currentItem.product.id === productId);
 
     if (!item) {
@@ -51,7 +54,7 @@ export class QuoteCartService {
     this.setItemQuantity(productId, item.quantity - 1);
   }
 
-  removeProduct(productId: number): void {
+  removeProduct(productId: string | number): void {
     this.items.update((items) => items.filter((item) => item.product.id !== productId));
     this.syncVisibilityWithItems();
   }
@@ -101,7 +104,7 @@ export class QuoteCartService {
     this.isMobileOpen.update((isOpen) => !isOpen);
   }
 
-  private setItemQuantity(productId: number, quantity: number): void {
+  private setItemQuantity(productId: string | number, quantity: number): void {
     if (quantity <= 0) {
       this.removeProduct(productId);
       return;
