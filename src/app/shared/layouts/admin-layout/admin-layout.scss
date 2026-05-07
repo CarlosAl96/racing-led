@@ -2,7 +2,7 @@
   height: 100dvh;
   min-height: 100dvh;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto minmax(0, 1fr);
   background:
     radial-gradient(
       circle at 80% -10%,
@@ -69,6 +69,43 @@
   scale: 1.05;
 }
 
+.admin-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid color-mix(in srgb, var(--p-content-border-color) 70%, transparent);
+  background: color-mix(in srgb, var(--p-surface-0) 78%, transparent);
+  backdrop-filter: blur(6px);
+}
+
+.admin-nav__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  color: var(--p-text-muted-color);
+  text-decoration: none;
+  font-weight: 600;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.admin-nav__link:hover {
+  color: var(--p-text-color);
+  background: color-mix(in srgb, var(--p-primary-500) 10%, transparent);
+  transform: translateY(-1px);
+}
+
+.admin-nav__link.is-active {
+  color: var(--p-primary-700);
+  background: color-mix(in srgb, var(--p-primary-500) 14%, transparent);
+}
+
 .admin-shell__content {
   display: flex;
   min-width: 0;
@@ -83,6 +120,14 @@
 
   .admin-session-name {
     display: none;
+  }
+
+  .admin-nav {
+    gap: 0.5rem;
+  }
+
+  .admin-nav__link {
+    width: 100%;
   }
 }
 
@@ -112,6 +157,10 @@
   .header-shell,
   .header-logo {
     animation: none;
+  }
+
+  .admin-nav__link {
+    transition: none;
   }
 
   :host ::ng-deep .p-button {

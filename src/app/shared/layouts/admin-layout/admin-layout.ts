@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { AdminAuthService } from '../../../core/services/admin-auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-admin-layout',
-  imports: [RouterOutlet, ButtonModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ButtonModule],
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -18,6 +18,10 @@ export class AdminLayout {
 
   protected readonly isLogoutLoading = signal(false);
   protected readonly isAdminAuthenticated = this.adminAuthService.isAdminAuthenticated;
+  protected readonly adminSections = [
+    { label: 'Productos', link: '/admin/productos' },
+    { label: 'Promociones', link: '/admin/promociones' },
+  ];
   protected readonly adminDisplayName = computed(() => {
     const user = this.adminAuthService.adminUser();
 

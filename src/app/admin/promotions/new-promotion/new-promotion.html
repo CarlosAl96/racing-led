@@ -1,0 +1,127 @@
+<section class="new-promotion-modal">
+  <header class="new-promotion-modal__header">
+    <h3 class="new-promotion-modal__title">{{ modalTitle() }}</h3>
+    <p class="new-promotion-modal__subtitle">
+      Completa los datos de la promoción para crearla o actualizarla.
+    </p>
+  </header>
+
+  <form class="new-promotion-form" [formGroup]="form" (ngSubmit)="savePromotion()">
+    <div class="new-promotion-form__field">
+      <label for="promotion-title">Título *</label>
+      <input
+        id="promotion-title"
+        pInputText
+        type="text"
+        formControlName="title"
+        autocomplete="off"
+        placeholder="Ej. Promo relámpago"
+      />
+      @if (isControlInvalid('title')) {
+        <small class="field-error">El título es obligatorio.</small>
+      }
+    </div>
+
+    <div class="new-promotion-form__field">
+      <label for="promotion-description">Descripción *</label>
+      <textarea
+        id="promotion-description"
+        pTextarea
+        formControlName="description"
+        rows="4"
+        placeholder="Describe la promoción y sus condiciones"
+      ></textarea>
+      @if (isControlInvalid('description')) {
+        <small class="field-error">La descripción es obligatoria.</small>
+      }
+    </div>
+
+    <div class="new-promotion-form__field">
+      <label for="promotion-percent">Descuento (%) *</label>
+      <p-inputnumber
+        inputId="promotion-percent"
+        formControlName="percent"
+        mode="decimal"
+        [min]="0"
+        [max]="100"
+        [minFractionDigits]="0"
+        [maxFractionDigits]="2"
+        suffix="%"
+        placeholder="0"
+      ></p-inputnumber>
+      @if (isControlInvalid('percent')) {
+        <small class="field-error">El porcentaje es obligatorio y debe estar entre 0 y 100.</small>
+      }
+    </div>
+
+    <div class="new-promotion-form__field">
+      <label for="promotion-ids-prods">IDs de productos *</label>
+      <textarea
+        id="promotion-ids-prods"
+        pTextarea
+        formControlName="idsProds"
+        rows="3"
+        placeholder="Ej. 10, 15, 21"
+      ></textarea>
+      <small class="field-note">Ingresa los IDs separados por comas.</small>
+      @if (isControlInvalid('idsProds')) {
+        <small class="field-error">Debes indicar IDs numéricos separados por comas.</small>
+      }
+    </div>
+
+    <div class="new-promotion-form__field">
+      <label>Imagen de la promoción</label>
+      <div class="new-promotion-form__upload-row">
+        <p-fileupload
+          mode="basic"
+          chooseLabel="Seleccionar imagen"
+          chooseIcon="pi pi-image"
+          [auto]="true"
+          [customUpload]="true"
+          [multiple]="false"
+          [showUploadButton]="false"
+          [showCancelButton]="false"
+          accept="image/*"
+          maxFileSize="5000000"
+          (onSelect)="onImageSelect($event)"
+        ></p-fileupload>
+
+        @if (hasSelectedNewImage()) {
+          <button
+            pButton
+            type="button"
+            severity="secondary"
+            variant="outlined"
+            label="Quitar"
+            (click)="clearImageSelection()"
+          ></button>
+        }
+      </div>
+
+      @if (currentImageUrl(); as previewUrl) {
+        <div class="new-promotion-form__preview">
+          <img
+            [src]="previewUrl"
+            alt="Vista previa de la promoción"
+            class="new-promotion-form__preview-image"
+            (error)="onPreviewError($event)"
+          />
+        </div>
+      }
+    </div>
+
+    <footer class="new-promotion-form__actions">
+      <button
+        pButton
+        type="button"
+        severity="secondary"
+        variant="outlined"
+        label="Cancelar"
+        [disabled]="isSubmitting()"
+        (click)="cancel()"
+      ></button>
+
+      <button pButton type="submit" [label]="submitLabel()" [loading]="isSubmitting()"></button>
+    </footer>
+  </form>
+</section>

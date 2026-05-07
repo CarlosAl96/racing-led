@@ -1,0 +1,197 @@
+<section class="admin-promotions px-3 py-4 md:px-4">
+	<p-confirmdialog></p-confirmdialog>
+
+	<div class="admin-promotions__header">
+		<div>
+			<h2 class="admin-promotions__title m-0">Listado de promociones</h2>
+		</div>
+
+		<button
+			pButton
+			type="button"
+			icon="pi pi-plus"
+			label="Agregar promoción"
+			class="admin-promotions__add"
+			(click)="openPromotionModal()"
+		></button>
+	</div>
+
+	@if (isLoading() && !hasPromotions()) {
+		<div
+			class="loading-initial"
+			role="status"
+			aria-live="polite"
+			aria-label="Cargando promociones"
+		>
+			<div class="loading-parts">
+				<span class="loading-parts-wheel" aria-hidden="true">
+					<i class="pi pi-megaphone"></i>
+				</span>
+				<span class="loading-parts-text">Cargando promociones...</span>
+			</div>
+		</div>
+	} @else {
+		<p-table
+			[value]="promotions()"
+			[lazy]="true"
+			[paginator]="true"
+			[pageLinks]="3"
+			[rows]="rows"
+			[first]="first()"
+			[totalRecords]="totalRecords()"
+			[loading]="isLoading()"
+			[rowHover]="true"
+			[showCurrentPageReport]="true"
+			[currentPageReportTemplate]="currentPageReportTemplate"
+			(onLazyLoad)="onLazyLoad($event)"
+			class="admin-promotions-table"
+		>
+			<ng-template #caption>
+				<div class="table-caption">
+					<form class="catalog-toolbar" [formGroup]="filtersForm">
+						<div class="catalog-toolbar__field catalog-toolbar__field--search">
+							<label class="catalog-toolbar__label" for="admin-promotion-search"
+								>Buscar promoción</label
+							>
+							<input
+								id="admin-promotion-search"
+								pInputText
+								type="search"
+								formControlName="search"
+								class="catalog-toolbar__input"
+								placeholder="Título, descripción o IDs de productos"
+								(keydown.enter)="applyFilters()"
+							/>
+						</div>
+
+						<div class="catalog-toolbar__actions">
+							<button pButton type="button" icon="pi pi-search" label="Buscar" (click)="applyFilters()"></button>
+
+							@if (hasActiveFilters()) {
+								<button
+									pButton
+									type="button"
+									severity="secondary"
+									variant="outlined"
+									label="Limpiar"
+									(click)="clearFilters()"
+								></button>
+							}
+						</div>
+					</form>
+
+					<div class="catalog-meta pb-2">
+						<span>{{ totalRecords() }} promociones registradas</span>
+
+						@if (hasActiveFilters()) {
+							<span>Filtros activos</span>
+						}
+					</div>
+				</div>
+			</ng-template>
+
+			<ng-template #header>
+				<tr>
+					<th class="index-column">#</th>
+					<th class="image-column">Imagen</th>
+					<th>Promoción</th>
+					<th>Descuento</th>
+					<th>Productos</th>
+					<th>Creado</th>
+					<th>Actualizado</th>
+					<th class="actions-column">Acciones</th>
+				</tr>
+			</ng-template>
+
+			<ng-template #body let-promotion let-rowIndex="rowIndex">
+				<tr>
+					<td class="index-column">
+						<span class="p-column-title">#</span>
+						<span class="cell-muted">{{ first() + rowIndex + 1 }}</span>
+					</td>
+					<td class="image-column">
+						<span class="p-column-title">Imagen</span>
+						<div class="promotion-thumbnail-frame">
+							<img
+								[src]="resolveImage(promotion.file)"
+								[alt]="promotion.title"
+								class="promotion-thumbnail"
+								loading="lazy"
+								(error)="onImageError($event)"
+							/>
+						</div>
+					</td>
+					<td>
+						<span class="p-column-title">Promoción</span>
+						<div class="promotion-main-cell">
+							<span class="promotion-main-cell__title">{{ promotion.title }}</span>
+							<span class="cell-muted">{{ promotion.description }}</span>
+						</div>
+					</td>
+					<td>
+						<span class="p-column-title">Descuento</span>
+						<span class="promotion-percent">{{ promotion.percent }}%</span>
+					</td>
+					<td>
+						<span class="p-column-title">Productos</span>
+						<div class="promotion-products-cell">
+							<span class="promotion-products-cell__count">
+								{{ resolveProductsCount(promotion.idsProds) }} vinculados
+							</span>
+							<span class="cell-muted">{{ resolveIdsProds(promotion.idsProds) }}</span>
+						</div>
+					</td>
+					<td>
+						<span class="p-column-title">Creado</span>
+						<span class="cell-muted">{{ promotion.created_at | date: 'dd/MM/yyyy HH:mm' }}</span>
+					</td>
+					<td>
+						<span class="p-column-title">Actualizado</span>
+						<span class="cell-muted">{{ promotion.updated_at | date: 'dd/MM/yyyy HH:mm' }}</span>
+					</td>
+					<td class="actions-column">
+						<span class="p-column-title">Acciones</span>
+						<div class="row-actions">
+							<button
+								pButton
+								type="button"
+								icon="pi pi-pencil"
+								[rounded]="true"
+								[text]="true"
+								severity="secondary"
+								aria-label="Editar promoción"
+								(click)="openPromotionModal(promotion)"
+							></button>
+							<button
+								pButton
+								type="button"
+								icon="pi pi-trash"
+								[rounded]="true"
+								[text]="true"
+								severity="danger"
+								aria-label="Eliminar promoción"
+								[loading]="deletingPromotionId() === promotion.id"
+								[disabled]="deletingPromotionId() === promotion.id"
+								(click)="confirmDeletePromotion(promotion)"
+							></button>
+						</div>
+					</td>
+				</tr>
+			</ng-template>
+
+			<ng-template #emptymessage>
+				<tr>
+					<td colspan="8">
+						<div class="empty-state text-center py-6">
+							{{
+								hasActiveFilters()
+									? 'No hay promociones para esta búsqueda.'
+									: 'No hay promociones registradas.'
+							}}
+						</div>
+					</td>
+				</tr>
+			</ng-template>
+		</p-table>
+	}
+</section>

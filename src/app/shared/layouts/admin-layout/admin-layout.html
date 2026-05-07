@@ -1,42 +1,57 @@
 <div class="admin-shell">
-	<header class="header-shell px-3 py-2 md:px-2 md:py-2">
-		<div class="flex align-items-center justify-content-between gap-3">
-			<div class="flex align-items-center gap-3 min-w-0">
-				<img
-					src="assets/logo.png"
-					width="120"
-					height="58"
-					alt="Logo Racing Led"
-					class="header-logo"
-				/>
-				<h1 class="header-title m-0 white-space-nowrap overflow-hidden text-overflow-ellipsis">
-					RACING LED
-				</h1>
-			</div>
+  <header class="header-shell px-3 py-2 md:px-2 md:py-2">
+    <div class="flex align-items-center justify-content-between gap-3">
+      <div class="flex align-items-center gap-3 min-w-0">
+        <img
+          src="assets/logo.png"
+          width="120"
+          height="58"
+          alt="Logo Racing Led"
+          class="header-logo"
+        />
+        <h1 class="header-title m-0 white-space-nowrap overflow-hidden text-overflow-ellipsis">
+          RACING LED
+        </h1>
+      </div>
 
-			@if (isAdminAuthenticated()) {
-				<div class="admin-header-actions flex align-items-center gap-2">
-					<span class="admin-session-name white-space-nowrap" [title]="adminDisplayName()">
-						{{ adminDisplayName() }}
-					</span>
-					<button
-						pButton
-						type="button"
-						icon="pi pi-sign-out"
-						[rounded]="true"
-						[text]="true"
-						class="cart-button"
-						[loading]="isLogoutLoading()"
-						[disabled]="isLogoutLoading()"
-						aria-label="Cerrar sesion"
-						(click)="logout()"
-					></button>
-				</div>
-			}
-		</div>
-	</header>
+      @if (isAdminAuthenticated()) {
+        <div class="admin-header-actions flex align-items-center gap-2">
+          <span class="admin-session-name white-space-nowrap" [title]="adminDisplayName()">
+            {{ adminDisplayName() }}
+          </span>
+          <button
+            pButton
+            type="button"
+            icon="pi pi-sign-out"
+            [rounded]="true"
+            [text]="true"
+            class="cart-button"
+            [loading]="isLogoutLoading()"
+            [disabled]="isLogoutLoading()"
+            aria-label="Cerrar sesion"
+            (click)="logout()"
+          ></button>
+        </div>
+      }
+    </div>
+  </header>
 
-	<main class="admin-shell__content">
-		<router-outlet></router-outlet>
-	</main>
+  @if (isAdminAuthenticated()) {
+    <nav class="admin-nav px-3 py-2 md:px-4" aria-label="Secciones del panel admin">
+      @for (section of adminSections; track section.link) {
+        <a
+          [routerLink]="section.link"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="admin-nav__link"
+        >
+          {{ section.label }}
+        </a>
+      }
+    </nav>
+  }
+
+  <main class="admin-shell__content">
+    <router-outlet></router-outlet>
+  </main>
 </div>

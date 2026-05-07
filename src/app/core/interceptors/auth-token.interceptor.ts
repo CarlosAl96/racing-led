@@ -7,7 +7,7 @@ export const authTokenInterceptor: HttpInterceptorFn = (request, next) => {
   const adminAuthService = inject(AdminAuthService);
   const accessToken = adminAuthService.adminAccessToken();
 
-  if (!accessToken || !isProtectedProductsRequest(request.method, request.url)) {
+  if (!accessToken || !isProtectedAdminMutationRequest(request.method, request.url)) {
     return next(request);
   }
 
@@ -20,7 +20,7 @@ export const authTokenInterceptor: HttpInterceptorFn = (request, next) => {
   );
 };
 
-function isProtectedProductsRequest(method: string, url: string): boolean {
+function isProtectedAdminMutationRequest(method: string, url: string): boolean {
   const normalizedMethod = method.toUpperCase();
   const pathname = extractPathname(url);
 
@@ -28,11 +28,23 @@ function isProtectedProductsRequest(method: string, url: string): boolean {
     return true;
   }
 
+  if (normalizedMethod === 'POST' && pathname.endsWith('/functions/v1/smooth-processor')) {
+    return true;
+  }
+
   if (normalizedMethod === 'PUT' && pathname.includes('/functions/v1/super-service/')) {
     return true;
   }
 
+  if (normalizedMethod === 'PUT' && pathname.includes('/functions/v1/quick-task/')) {
+    return true;
+  }
+
   if (normalizedMethod === 'DELETE' && pathname.includes('/functions/v1/quick-api/')) {
+    return true;
+  }
+
+  if (normalizedMethod === 'DELETE' && pathname.includes('/functions/v1/super-processor/')) {
     return true;
   }
 
