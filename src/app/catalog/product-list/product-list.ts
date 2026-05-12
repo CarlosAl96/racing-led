@@ -12,7 +12,7 @@ import {
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { CarouselModule } from 'primeng/carousel';
+import { Carousel, CarouselModule } from 'primeng/carousel';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { finalize, Subscription } from 'rxjs';
@@ -163,7 +163,11 @@ export class ProductList implements OnInit, OnDestroy {
       window.addEventListener('resize', this.resizeHandler, { passive: true });
     }
   }
-
+  constructor() {
+    // Anula la función que bloquea el scroll vertical
+    // Esto permite que el navegador maneje el desplazamiento natural
+    Carousel.prototype.onTouchMove = () => { };
+  }
   ngOnDestroy(): void {
     this.catalogFiltersService.hideToggle();
     this.productsRequestSubscription?.unsubscribe();

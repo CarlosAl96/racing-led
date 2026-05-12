@@ -2,6 +2,15 @@
   --p-font-family: 'Exo 2', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 }
 
+:host ::ng-deep .promotions-carousel,
+:host ::ng-deep .promotions-carousel * {
+  touch-action: pan-y !important;
+}
+
+:host ::ng-deep .p-carousel-content {
+  touch-action: pan-y !important;
+}
+
 html,
 body {
   font-family: var(--p-font-family);

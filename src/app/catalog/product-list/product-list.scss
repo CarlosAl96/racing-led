@@ -3,6 +3,8 @@
   margin: 0 auto;
 }
 
+
+
 .catalog-toolbar {
   display: grid;
   gap: 1rem;
@@ -11,11 +13,9 @@
   border: 1px solid color-mix(in srgb, var(--p-content-border-color) 70%, transparent);
   border-radius: var(--p-border-radius-xl);
   background:
-    linear-gradient(
-      135deg,
+    linear-gradient(135deg,
       color-mix(in srgb, var(--p-primary-500) 10%, transparent),
-      transparent 55%
-    ),
+      transparent 55%),
     color-mix(in srgb, var(--p-surface-0) 94%, transparent);
 }
 
@@ -170,7 +170,7 @@
   flex-wrap: wrap;
 }
 
-.promotions-strip__actions > * {
+.promotions-strip__actions>* {
   min-width: 0;
 }
 
@@ -364,7 +364,7 @@
   height: auto;
 }
 
-:host ::ng-deep .promotions-carousel .p-carousel-item > * {
+:host ::ng-deep .promotions-carousel .p-carousel-item>* {
   width: 100%;
 }
 
@@ -665,6 +665,7 @@
     opacity: 0;
     transform: translateY(-8px) scale(0.99);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -682,7 +683,7 @@
     gap: 1rem;
   }
 
-  .sales-advisor-banner > .flex {
+  .sales-advisor-banner>.flex {
     grid-column: 1;
     min-width: 0;
   }
@@ -729,7 +730,7 @@
     justify-content: stretch;
   }
 
-  .promotions-strip__actions > * {
+  .promotions-strip__actions>* {
     flex: 1 1 100%;
   }
 
@@ -864,6 +865,7 @@
       animation: none;
     }
   }
+
   :host ::ng-deep .add-cart-button {
     font-size: 0.82rem;
   }
@@ -872,7 +874,7 @@
     padding: 0.45rem 0.55rem;
   }
 
-  .catalog-toolbar__actions > * {
+  .catalog-toolbar__actions>* {
     flex: 1 1 auto;
   }
 
@@ -909,6 +911,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .product-card,
   .product-image,
   .image-preview-backdrop {
