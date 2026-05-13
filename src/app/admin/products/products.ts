@@ -255,7 +255,7 @@ export class Products implements OnInit, OnDestroy {
   }
 
   private loadExchangeRate(): void {
-    this.dolarApiService.getParallelRate().subscribe({
+    this.dolarApiService.getOfficialRate().subscribe({
       next: (response) => {
         this.exchangeRate.set(response.promedio ?? null);
       },
