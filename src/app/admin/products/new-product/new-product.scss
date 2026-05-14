@@ -38,6 +38,25 @@
 	font-weight: 600;
 }
 
+.new-product-form__category-mode {
+	display: flex;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+.new-product-form__category-button--active {
+	box-shadow: 0 0 0 1px color-mix(in srgb, var(--p-primary-color) 35%, transparent) inset;
+}
+
+.new-product-form__new-category {
+	display: grid;
+	gap: 0.42rem;
+	padding: 0.85rem;
+	border-radius: var(--p-border-radius-lg);
+	border: 1px dashed color-mix(in srgb, var(--p-content-border-color) 70%, transparent);
+	background: transparent;
+}
+
 .new-product-form__upload-row {
 	display: flex;
 	align-items: center;
@@ -79,6 +98,10 @@
 }
 
 @media (max-width: 640px) {
+	.new-product-form__category-mode > * {
+		flex: 1 1 auto;
+	}
+
 	.new-product-form__actions > * {
 		flex: 1 1 auto;
 	}

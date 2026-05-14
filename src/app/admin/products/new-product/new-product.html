@@ -39,15 +39,60 @@
 
     <div class="new-product-form__field">
       <label for="product-category">Categoría *</label>
-      <p-select
-        inputId="product-category"
-        formControlName="category"
-        [options]="categories()"
-        [editable]="true"
-        [filter]="true"
-        [loading]="isLoadingCategories()"
-        placeholder="Selecciona o escribe una categoría"
-      ></p-select>
+      <div class="new-product-form__category-mode" role="group" aria-label="Modo de categoría">
+        <button
+          pButton
+          type="button"
+          size="small"
+          severity="secondary"
+          [outlined]="isCreatingCategory()"
+          label="Elegir existente"
+          icon="pi pi-list"
+          [class.new-product-form__category-button--active]="!isCreatingCategory()"
+          [disabled]="!hasCategories()"
+          (click)="selectExistingCategoryMode()"
+        ></button>
+        <button
+          pButton
+          type="button"
+          size="small"
+          severity="secondary"
+          [outlined]="!isCreatingCategory()"
+          label="Crear nueva"
+          icon="pi pi-plus"
+          [class.new-product-form__category-button--active]="isCreatingCategory()"
+          (click)="selectNewCategoryMode()"
+        ></button>
+      </div>
+
+      @if (!isCreatingCategory()) {
+        <p-select
+          inputId="product-category"
+          formControlName="category"
+          [options]="categories()"
+          [filter]="true"
+          [loading]="isLoadingCategories()"
+          emptyFilterMessage="No se encontraron categorías"
+          placeholder="Selecciona una categoría"
+        ></p-select>
+
+        <small class="field-note">No ves la categoría correcta? Usa “Crear nueva”.</small>
+      } @else {
+        <div class="new-product-form__new-category">
+          <input
+            id="product-category"
+            pInputText
+            type="text"
+            formControlName="category"
+            autocomplete="off"
+            placeholder="Ej. Iluminación interior"
+          />
+          <small class="field-note">
+            Escribe el nombre de la nueva categoría tal como quieres guardarla.
+          </small>
+        </div>
+      }
+
       @if (isControlInvalid('category')) {
         <small class="field-error">La categoría es obligatoria.</small>
       }

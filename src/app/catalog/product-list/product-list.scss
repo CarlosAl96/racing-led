@@ -1,11 +1,13 @@
 .product-list-wrapper {
   max-width: 1600px;
   margin: 0 auto;
+  --catalog-toolbar-sticky-top: calc(env(safe-area-inset-top, 0px) + clamp(1rem, 0rem + 1vw, 0rem));
 }
 
-
-
 .catalog-toolbar {
+  position: sticky;
+  top: var(--catalog-toolbar-sticky-top);
+  z-index: 30;
   display: grid;
   gap: 1rem;
   padding: 1rem;
@@ -13,10 +15,12 @@
   border: 1px solid color-mix(in srgb, var(--p-content-border-color) 70%, transparent);
   border-radius: var(--p-border-radius-xl);
   background:
-    linear-gradient(135deg,
+    linear-gradient(
+      135deg,
       color-mix(in srgb, var(--p-primary-500) 10%, transparent),
-      transparent 55%),
-    color-mix(in srgb, var(--p-surface-0) 94%, transparent);
+      transparent 55%
+    ),
+    color-mix(in srgb, var(--p-surface-0) 98%, white 2%);
 }
 
 .sales-advisor-banner {
@@ -144,8 +148,16 @@
   border: 1px solid color-mix(in srgb, var(--p-content-border-color) 68%, transparent);
   border-radius: calc(var(--p-border-radius-xl) * 1.1);
   background:
-    radial-gradient(circle at top left, color-mix(in srgb, #ffd84d 18%, transparent), transparent 34%),
-    linear-gradient(180deg, color-mix(in srgb, var(--p-surface-0) 98%, white 2%), var(--p-surface-0));
+    radial-gradient(
+      circle at top left,
+      color-mix(in srgb, #ffd84d 18%, transparent),
+      transparent 34%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--p-surface-0) 98%, white 2%),
+      var(--p-surface-0)
+    );
   box-shadow: 0 18px 40px color-mix(in srgb, black 8%, transparent);
 }
 
@@ -170,7 +182,7 @@
   flex-wrap: wrap;
 }
 
-.promotions-strip__actions>* {
+.promotions-strip__actions > * {
   min-width: 0;
 }
 
@@ -364,7 +376,7 @@
   height: auto;
 }
 
-:host ::ng-deep .promotions-carousel .p-carousel-item>* {
+:host ::ng-deep .promotions-carousel .p-carousel-item > * {
   width: 100%;
 }
 
@@ -683,7 +695,7 @@
     gap: 1rem;
   }
 
-  .sales-advisor-banner>.flex {
+  .sales-advisor-banner > .flex {
     grid-column: 1;
     min-width: 0;
   }
@@ -730,7 +742,7 @@
     justify-content: stretch;
   }
 
-  .promotions-strip__actions>* {
+  .promotions-strip__actions > * {
     flex: 1 1 100%;
   }
 
@@ -874,7 +886,7 @@
     padding: 0.45rem 0.55rem;
   }
 
-  .catalog-toolbar__actions>* {
+  .catalog-toolbar__actions > * {
     flex: 1 1 auto;
   }
 
@@ -911,7 +923,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .product-card,
   .product-image,
   .image-preview-backdrop {

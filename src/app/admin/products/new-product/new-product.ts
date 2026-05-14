@@ -51,7 +51,9 @@ export class NewProduct implements OnInit, OnDestroy {
 
   protected readonly isSubmitting = signal(false);
   protected readonly isLoadingCategories = signal(false);
+  protected readonly isCreatingCategory = signal(false);
   protected readonly categories = signal<string[]>(this.dialogConfig.data?.categories ?? []);
+  protected readonly hasCategories = computed(() => this.categories().length > 0);
   protected readonly hasSelectedNewImage = computed(() => this.selectedImageFile() !== null);
   protected readonly selectedImageName = computed(
     () => this.selectedImageFile()?.name ?? this.form.controls.url_image.value,
@@ -83,6 +85,7 @@ export class NewProduct implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.patchFormIfEditing();
+    this.syncCategoryMode(this.categories());
     this.loadCategories();
   }
 
@@ -113,6 +116,19 @@ export class NewProduct implements OnInit, OnDestroy {
 
   protected cancel(): void {
     this.dialogRef.close({ saved: false });
+  }
+
+  protected selectExistingCategoryMode(): void {
+    if (!this.hasCategories()) {
+      return;
+    }
+
+    this.isCreatingCategory.set(false);
+  }
+
+  protected selectNewCategoryMode(): void {
+    this.isCreatingCategory.set(true);
+    this.form.controls.category.markAsTouched();
   }
 
   protected saveProduct(): void {
@@ -196,8 +212,10 @@ export class NewProduct implements OnInit, OnDestroy {
             new Set([...(response.data ?? []), ...this.categories()]),
           );
           this.categories.set(uniqueCategories);
+          this.syncCategoryMode(uniqueCategories);
         },
         error: () => {
+          this.isCreatingCategory.set(true);
           this.toastService.setMessage({
             severity: 'warn',
             summary: 'Categorías no disponibles',
@@ -233,5 +251,21 @@ export class NewProduct implements OnInit, OnDestroy {
 
     URL.revokeObjectURL(objectUrl);
     this.selectedImageObjectUrl.set(null);
+  }
+
+  private syncCategoryMode(categories: string[]): void {
+    const currentCategory = this.form.controls.category.value.trim();
+
+    if (!categories.length) {
+      this.isCreatingCategory.set(true);
+      return;
+    }
+
+    if (currentCategory && !categories.includes(currentCategory)) {
+      this.isCreatingCategory.set(true);
+      return;
+    }
+
+    this.isCreatingCategory.set(false);
   }
 }
