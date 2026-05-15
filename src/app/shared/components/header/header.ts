@@ -8,14 +8,29 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
+import { DrawerModule } from 'primeng/drawer';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
 import { CatalogFiltersService } from '../../../core/services/catalog-filters.service';
 import { QuoteCartService } from '../../../core/services/quote-cart.service';
 
 @Component({
   selector: 'app-header',
-  imports: [ButtonModule, BadgeModule],
+  imports: [
+    ButtonModule,
+    BadgeModule,
+    DrawerModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    InputTextModule,
+    ReactiveFormsModule,
+    SelectModule,
+  ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,12 +45,33 @@ export class Header implements OnInit, OnDestroy {
 
   readonly brandTitle = 'RACING LED';
   protected readonly isMobile = signal(false);
+  protected readonly filtersForm = new FormGroup({
+    search: new FormControl('', { nonNullable: true }),
+    category: new FormControl('', { nonNullable: true }),
+  });
   protected readonly cartCount = this.quoteCartService.totalQuantity;
   protected readonly isCatalogFilterToggleVisible = this.catalogFiltersService.isToggleVisible;
   protected readonly isCatalogFiltersOpen = this.catalogFiltersService.isFiltersOpen;
+  protected readonly appliedSearch = this.catalogFiltersService.appliedSearch;
+  protected readonly appliedCategory = this.catalogFiltersService.appliedCategory;
+  protected readonly categories = this.catalogFiltersService.categories;
+  protected readonly isLoadingCategories = this.catalogFiltersService.isLoadingCategories;
   protected readonly isCartPulsing = signal(false);
   protected readonly isCartOpen = computed(() =>
     this.isMobile() ? this.quoteCartService.isMobileOpen() : this.quoteCartService.isDesktopOpen(),
+  );
+  protected readonly isMobileFiltersDrawerVisible = computed(
+    () => this.isMobile() && this.isCatalogFilterToggleVisible() && this.isCatalogFiltersOpen(),
+  );
+  protected readonly categoryOptions = computed(() => [
+    { label: 'Todas las categorías', value: '' },
+    ...this.categories().map((category) => ({
+      label: category,
+      value: category,
+    })),
+  ]);
+  protected readonly hasActiveHeaderFilters = computed(
+    () => !!this.appliedSearch() || !!this.appliedCategory(),
   );
 
   constructor() {
@@ -62,6 +98,11 @@ export class Header implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.filtersForm.setValue({
+      search: this.appliedSearch(),
+      category: this.appliedCategory(),
+    });
+
     this.syncViewportMode();
 
     if (typeof window === 'undefined') {
@@ -90,6 +131,43 @@ export class Header implements OnInit, OnDestroy {
 
   protected toggleCatalogFilters(): void {
     this.catalogFiltersService.toggleFilters();
+  }
+
+  protected applyHeaderFilters(): void {
+    this.catalogFiltersService.applyFilters({
+      search: this.filtersForm.controls.search.value,
+      category: this.filtersForm.controls.category.value,
+    });
+  }
+
+  protected closeMobileFilters(): void {
+    this.catalogFiltersService.setFiltersOpen(false);
+  }
+
+  protected onMobileFiltersVisibilityChange(isOpen: boolean): void {
+    this.catalogFiltersService.setFiltersOpen(isOpen);
+  }
+
+  protected applyCategory(category: string): void {
+    this.filtersForm.controls.category.setValue(category);
+    this.catalogFiltersService.applyFilters({
+      search: this.filtersForm.controls.search.value,
+      category,
+    });
+    this.catalogFiltersService.setFiltersOpen(false);
+  }
+
+  protected clearHeaderFilters(): void {
+    this.filtersForm.setValue({
+      search: '',
+      category: '',
+    });
+    this.catalogFiltersService.clearFilters();
+    this.catalogFiltersService.setFiltersOpen(false);
+  }
+
+  protected isAppliedCategory(category: string): boolean {
+    return this.appliedCategory() === category;
   }
 
   private syncViewportMode(): void {

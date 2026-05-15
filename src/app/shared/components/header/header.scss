@@ -6,24 +6,42 @@
 }
 
 .header-shell {
+  display: grid;
+  gap: 0.6rem;
   background-color: color-mix(in srgb, var(--p-surface-0) 88%, transparent);
   border-bottom: 1px solid var(--p-content-border-color);
   backdrop-filter: blur(6px);
   animation: header-enter 280ms ease-out;
 }
 
+.header-main-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-right: 1rem;
+}
+
+.header-brand {
+  flex: 0 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
 .header-logo {
   display: block;
   height: auto;
-  max-width: 120px;
+  max-width: 72px;
   animation: logo-enter 360ms ease-out;
 }
 
 .header-title {
   color: var(--p-primary-700);
   font-weight: 700;
-  letter-spacing: 0.18rem;
-  font-size: clamp(1rem, 0.9rem + 0.6vw, 1.4rem);
+  letter-spacing: 0.12rem;
+  font-size: clamp(0.88rem, 0.8rem + 0.38vw, 1.08rem);
 }
 
 .cart-button-wrap {
@@ -31,13 +49,205 @@
 }
 
 .header-actions {
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
 }
 
+.header-mobile-filter {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.header-desktop-filter {
+  flex: 0 1 auto;
+  display: grid;
+  grid-template-columns: minmax(16rem, 22rem) minmax(11rem, 14rem) auto;
+  gap: 0.75rem;
+  align-items: center;
+  min-width: 0;
+  margin-left: auto;
+}
+
+.header-desktop-filter__field,
+.header-desktop-filter__actions {
+  min-width: 0;
+}
+
+.header-desktop-filter__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}
+
+:host ::ng-deep .header-desktop-filter__input.p-inputtext,
+:host ::ng-deep .header-desktop-filter__select {
+  width: 100%;
+}
+
+.header-desktop-filter__field--search {
+  width: min(22rem, 100%);
+}
+
+.header-desktop-filter__field--category {
+  width: min(14rem, 100%);
+}
+
+.header-mobile-filter__form {
+  width: 100%;
+}
+
+:host ::ng-deep .header-mobile-filter .p-inputgroup {
+  width: 100%;
+  align-items: stretch;
+}
+
+:host ::ng-deep .header-mobile-filter .p-inputgroupaddon {
+  padding: 0;
+  border-color: var(--p-content-border-color);
+  background: color-mix(in srgb, var(--p-surface-0) 96%, transparent);
+}
+
+:host ::ng-deep .header-mobile-filter__menu-button.p-button,
+:host ::ng-deep .header-mobile-filter__submit-button.p-button {
+  width: 2.9rem;
+  min-width: 2.9rem;
+  height: 2.9rem;
+  border-radius: 0;
+  border: none;
+  background: var(--p-primary-color);
+  color: var(--p-primary-contrast-color);
+}
+
+:host ::ng-deep .header-mobile-filter__menu-button.p-button {
+  border-radius: 0.9rem 0 0 0.9rem;
+}
+
+:host ::ng-deep .header-mobile-filter__submit-button.p-button {
+  border-radius: 0 0.9rem 0.9rem 0;
+}
+
+:host ::ng-deep .header-mobile-filter__menu-button.p-button .p-button-icon,
+:host ::ng-deep .header-mobile-filter__submit-button.p-button .p-button-icon {
+  color: inherit;
+}
+
+:host ::ng-deep .header-mobile-filter__menu-button.p-button:hover,
+:host ::ng-deep .header-mobile-filter__submit-button.p-button:hover {
+  background: color-mix(in srgb, var(--p-primary-color) 88%, black 12%);
+}
+
+:host ::ng-deep .header-mobile-filter .p-inputgroupaddon:first-child {
+  border-radius: 0.9rem 0 0 0.9rem;
+}
+
+:host ::ng-deep .header-mobile-filter .p-inputgroupaddon:last-child {
+  border-radius: 0 0.9rem 0.9rem 0;
+}
+
+:host ::ng-deep .header-mobile-filter__input.p-inputtext {
+  min-height: 2.9rem;
+  border-color: var(--p-content-border-color);
+  border-inline-width: 0;
+  background: color-mix(in srgb, var(--p-surface-0) 98%, transparent);
+  font-size: 0.92rem;
+}
+
+.header-mobile-filter__selected-category {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.header-mobile-filter__selected-category span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.8rem;
+  padding: 0.15rem 0.7rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--p-primary-500) 10%, transparent);
+  color: var(--p-primary-700);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.catalog-mobile-drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+}
+
+.catalog-mobile-drawer__eyebrow {
+  color: var(--p-text-muted-color);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.catalog-mobile-drawer__title {
+  color: color-mix(in srgb, var(--p-primary-600) 74%, #1f2937 26%);
+  font-size: 1.08rem;
+  font-weight: 800;
+}
+
+.catalog-mobile-drawer__content {
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 0.25rem;
+}
+
+.catalog-mobile-drawer__loading {
+  color: var(--p-text-muted-color);
+  font-size: 0.88rem;
+}
+
+:host ::ng-deep .catalog-mobile-drawer__category-button.p-button,
+:host ::ng-deep .catalog-mobile-drawer__clear.p-button {
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 2.85rem;
+  border-radius: 1rem;
+  font-weight: 700;
+}
+
+:host ::ng-deep .catalog-mobile-drawer__category-button--active.p-button {
+  background: color-mix(in srgb, var(--p-primary-500) 90%, black 10%);
+  border-color: color-mix(in srgb, var(--p-primary-600) 70%, black 30%);
+  color: #ffffff;
+}
+
 :host-context(.app-dark) .header-title {
   color: var(--p-primary-200);
+}
+
+:host-context(.app-dark) ::ng-deep .header-mobile-filter__menu-button.p-button {
+  color: var(--p-primary-contrast-color);
+}
+
+:host-context(.app-dark) ::ng-deep .header-mobile-filter__menu-button.p-button .p-button-icon {
+  color: inherit;
+}
+
+:host-context(.app-dark) ::ng-deep .header-mobile-filter .p-inputgroupaddon {
+  background: #f0e7bd;
+  border-color: color-mix(in srgb, #d9c06c 68%, #8b6f16 32%);
+}
+
+:host-context(.app-dark) ::ng-deep .header-mobile-filter__input.p-inputtext {
+  background: #f6efcf;
+  border-color: color-mix(in srgb, #d9c06c 68%, #8b6f16 32%);
+  color: #3e3205;
+  caret-color: #6f5400;
+}
+
+:host-context(.app-dark) ::ng-deep .header-mobile-filter__input.p-inputtext::placeholder {
+  color: #7a6430;
+  opacity: 1;
 }
 
 :host ::ng-deep .cart-button {
@@ -162,5 +372,21 @@
   :host ::ng-deep .cart-button.is-pulsing::after {
     transition: none;
     animation: none;
+  }
+}
+
+@media (min-width: 992px) {
+  .header-mobile-filter {
+    display: none;
+  }
+
+  .header-shell {
+    gap: 0;
+  }
+}
+
+@media (max-width: 991px) {
+  .header-desktop-filter {
+    display: none;
   }
 }

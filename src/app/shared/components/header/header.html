@@ -1,10 +1,10 @@
 <header class="header-shell px-3 py-2 md:px-2 md:py-2">
-  <div class="flex align-items-center justify-content-between gap-3 pr-4">
-    <div class="flex align-items-center gap-3 min-w-0">
+  <div class="header-main-row">
+    <div class="header-brand">
       <img
         src="assets/logo.png"
-        width="120"
-        height="58"
+        width="72"
+        height="34"
         alt="Logo Racing Led"
         class="header-logo"
       />
@@ -13,23 +13,49 @@
       </h1>
     </div>
 
-    <div class="header-actions">
-      @if (isCatalogFilterToggleVisible()) {
-        <button
-          pButton
-          type="button"
-          icon="pi pi-search"
-          [rounded]="true"
-          [text]="true"
-          class="catalog-filter-button"
-          [class.is-active]="isCatalogFiltersOpen()"
-          [attr.aria-label]="
-            isCatalogFiltersOpen() ? 'Ocultar filtros del catálogo' : 'Mostrar filtros del catálogo'
-          "
-          (click)="toggleCatalogFilters()"
-        ></button>
-      }
+    @if (isCatalogFilterToggleVisible() && !isMobile()) {
+      <form class="header-desktop-filter" [formGroup]="filtersForm" (ngSubmit)="applyHeaderFilters()">
+        <div class="header-desktop-filter__field header-desktop-filter__field--search">
+          <input
+            pInputText
+            type="search"
+            formControlName="search"
+            class="header-desktop-filter__input"
+            placeholder="Encuentra tu producto"
+            aria-label="Buscar productos del catálogo"
+          />
+        </div>
 
+        <div class="header-desktop-filter__field header-desktop-filter__field--category">
+          <p-select
+            formControlName="category"
+            [options]="categoryOptions()"
+            optionLabel="label"
+            optionValue="value"
+            [loading]="isLoadingCategories()"
+            placeholder="Todas las categorías"
+            class="header-desktop-filter__select"
+          ></p-select>
+        </div>
+
+        <div class="header-desktop-filter__actions">
+          <button pButton type="submit" icon="pi pi-search" label="Buscar"></button>
+
+          @if (hasActiveHeaderFilters()) {
+            <button
+              pButton
+              type="button"
+              severity="secondary"
+              [outlined]="true"
+              label="Limpiar"
+              (click)="clearHeaderFilters()"
+            ></button>
+          }
+        </div>
+      </form>
+    }
+
+    <div class="header-actions">
       <span
         class="cart-button-wrap p-overlay-badge"
         pBadge
@@ -54,4 +80,120 @@
       </span>
     </div>
   </div>
+
+  @if (isCatalogFilterToggleVisible() && isMobile()) {
+    <div class="header-mobile-filter">
+      <form class="header-mobile-filter__form" [formGroup]="filtersForm" (ngSubmit)="applyHeaderFilters()">
+        <p-inputgroup>
+          <p-inputgroup-addon>
+            <button
+              pButton
+              type="button"
+              icon="pi pi-bars"
+              class="header-mobile-filter__menu-button"
+              aria-label="Abrir categorías del catálogo"
+              (click)="toggleCatalogFilters()"
+            ></button>
+          </p-inputgroup-addon>
+
+          <input
+            pInputText
+            type="search"
+            formControlName="search"
+            class="header-mobile-filter__input"
+            placeholder="Encuentra tu producto"
+            aria-label="Buscar productos del catálogo"
+          />
+
+          <p-inputgroup-addon>
+            <button
+              pButton
+              type="button"
+              icon="pi pi-search"
+              class="header-mobile-filter__submit-button"
+              aria-label="Buscar productos"
+              (click)="applyHeaderFilters()"
+            ></button>
+          </p-inputgroup-addon>
+        </p-inputgroup>
+      </form>
+
+      @if (appliedCategory()) {
+        <div class="header-mobile-filter__selected-category" aria-live="polite">
+          <span>{{ appliedCategory() }}</span>
+        </div>
+      }
+    </div>
+
+    <p-drawer
+      position="left"
+      [visible]="isMobileFiltersDrawerVisible()"
+      [appendTo]="'body'"
+      [dismissible]="true"
+      [modal]="true"
+      [blockScroll]="true"
+      [closable]="false"
+      [style]="{ width: 'min(22rem, 88vw)' }"
+      class="catalog-mobile-drawer"
+      (visibleChange)="onMobileFiltersVisibilityChange($event)"
+    >
+      <ng-template #header>
+        <div class="catalog-mobile-drawer__header">
+          <div>
+            <p class="catalog-mobile-drawer__eyebrow m-0">Filtrar por categoría</p>
+            <h2 class="catalog-mobile-drawer__title m-0">Explora el catálogo</h2>
+          </div>
+
+          <button
+            pButton
+            type="button"
+            icon="pi pi-times"
+            [rounded]="true"
+            [text]="true"
+            aria-label="Cerrar menú de categorías"
+            (click)="closeMobileFilters()"
+          ></button>
+        </div>
+      </ng-template>
+
+      <section class="catalog-mobile-drawer__content" aria-label="Categorías disponibles">
+        <button
+          pButton
+          type="button"
+          class="catalog-mobile-drawer__category-button"
+          [class.catalog-mobile-drawer__category-button--active]="isAppliedCategory('')"
+          [outlined]="!isAppliedCategory('')"
+          label="Todas las categorías"
+          (click)="applyCategory('')"
+        ></button>
+
+        @if (isLoadingCategories()) {
+          <p class="catalog-mobile-drawer__loading m-0">Cargando categorías...</p>
+        } @else {
+          @for (category of categories(); track category) {
+            <button
+              pButton
+              type="button"
+              class="catalog-mobile-drawer__category-button"
+              [class.catalog-mobile-drawer__category-button--active]="isAppliedCategory(category)"
+              [outlined]="!isAppliedCategory(category)"
+              [label]="category"
+              (click)="applyCategory(category)"
+            ></button>
+          }
+        }
+
+        <button
+          pButton
+          type="button"
+          severity="secondary"
+          [outlined]="true"
+          class="catalog-mobile-drawer__clear"
+          label="Limpiar filtros"
+          icon="pi pi-filter-slash"
+          (click)="clearHeaderFilters()"
+        ></button>
+      </section>
+    </p-drawer>
+  }
 </header>

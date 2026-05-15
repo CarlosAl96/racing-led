@@ -6,6 +6,7 @@ import {
   OnInit,
   ViewChild,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -65,6 +66,7 @@ export class ProductList implements OnInit, OnDestroy {
   private closePreviewTimeout?: number;
   private productsRequestSubscription?: Subscription;
   private promotionsRequestSubscription?: Subscription;
+  private lastHandledFiltersRevision = 0;
 
   @ViewChild('infiniteTrigger')
   private set infiniteTrigger(element: ElementRef<HTMLDivElement> | undefined) {
@@ -92,17 +94,17 @@ export class ProductList implements OnInit, OnDestroy {
   });
   protected readonly products = signal<Product[]>([]);
   protected readonly promotions = signal<Promotion[]>([]);
-  protected readonly categories = signal<string[]>([]);
+  protected readonly categories = this.catalogFiltersService.categories;
   protected readonly totalRecords = signal(0);
   protected readonly isLoading = signal(false);
   protected readonly isLoadingMore = signal(false);
   protected readonly isLoadingPromotions = signal(false);
-  protected readonly isLoadingCategories = signal(false);
+  protected readonly isLoadingCategories = this.catalogFiltersService.isLoadingCategories;
   protected readonly hasMore = signal(true);
   protected readonly nextPage = signal(1);
   protected readonly exchangeRate = signal<number | null>(null);
-  protected readonly appliedSearch = signal('');
-  protected readonly appliedCategory = signal('');
+  protected readonly appliedSearch = this.catalogFiltersService.appliedSearch;
+  protected readonly appliedCategory = this.catalogFiltersService.appliedCategory;
   protected readonly appliedForDiscounts = signal(false);
   protected readonly selectedPromotionId = signal<string | number | null>(null);
   protected readonly previewImageUrl = signal<string | null>(null);
@@ -112,6 +114,7 @@ export class ProductList implements OnInit, OnDestroy {
   protected readonly hasProducts = computed(() => this.products().length > 0);
   protected readonly hasPromotions = computed(() => this.promotions().length > 0);
   protected readonly isFiltersOpen = this.catalogFiltersService.isFiltersOpen;
+  protected readonly showDesktopFilters = computed(() => !this.isMobile() && this.isFiltersOpen());
   protected readonly hasActiveFilters = computed(
     () =>
       !!this.appliedSearch() ||
@@ -151,10 +154,39 @@ export class ProductList implements OnInit, OnDestroy {
       value: category,
     })),
   ]);
+
+  constructor() {
+    effect(() => {
+      const filtersAction = this.catalogFiltersService.action();
+
+      if (filtersAction.revision === 0 || filtersAction.revision === this.lastHandledFiltersRevision) {
+        return;
+      }
+
+      this.lastHandledFiltersRevision = filtersAction.revision;
+      this.filtersForm.setValue({
+        search: this.catalogFiltersService.draftSearch(),
+        category: this.appliedCategory(),
+      });
+
+      if (filtersAction.type === 'clear') {
+        this.appliedForDiscounts.set(false);
+        this.selectedPromotionId.set(null);
+      }
+
+      this.resetProductsAndReload();
+    });
+
+    Carousel.prototype.onTouchMove = () => {};
+  }
+
   ngOnInit(): void {
     this.catalogFiltersService.showToggle();
     this.syncViewportMode();
-    this.loadCategories();
+    this.filtersForm.setValue({
+      search: this.catalogFiltersService.draftSearch(),
+      category: this.appliedCategory(),
+    });
     this.loadPromotions();
     this.loadExchangeRate();
     this.loadNextPage();
@@ -162,11 +194,6 @@ export class ProductList implements OnInit, OnDestroy {
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', this.resizeHandler, { passive: true });
     }
-  }
-  constructor() {
-    // Anula la función que bloquea el scroll vertical
-    // Esto permite que el navegador maneje el desplazamiento natural
-    Carousel.prototype.onTouchMove = () => { };
   }
   ngOnDestroy(): void {
     this.catalogFiltersService.hideToggle();
@@ -285,9 +312,10 @@ export class ProductList implements OnInit, OnDestroy {
   }
 
   protected applyFilters(): void {
-    this.appliedSearch.set(this.filtersForm.controls.search.value.trim());
-    this.appliedCategory.set(this.filtersForm.controls.category.value.trim());
-    this.resetProductsAndReload();
+    this.catalogFiltersService.applyFilters({
+      search: this.filtersForm.controls.search.value,
+      category: this.filtersForm.controls.category.value,
+    });
   }
 
   protected clearFilters(): void {
@@ -295,11 +323,9 @@ export class ProductList implements OnInit, OnDestroy {
       search: '',
       category: '',
     });
-    this.appliedSearch.set('');
-    this.appliedCategory.set('');
     this.appliedForDiscounts.set(false);
     this.selectedPromotionId.set(null);
-    this.resetProductsAndReload();
+    this.catalogFiltersService.clearFilters();
   }
 
   protected showDiscountedProducts(): void {
@@ -410,22 +436,6 @@ export class ProductList implements OnInit, OnDestroy {
       });
   }
 
-  private loadCategories(): void {
-    this.isLoadingCategories.set(true);
-
-    this.productsService
-      .getCategories()
-      .pipe(finalize(() => this.isLoadingCategories.set(false)))
-      .subscribe({
-        next: (response) => {
-          this.categories.set(response.data ?? []);
-        },
-        error: () => {
-          this.categories.set([]);
-        },
-      });
-  }
-
   private resetProductsAndReload(): void {
     this.productsRequestSubscription?.unsubscribe();
     this.observer?.disconnect();
@@ -470,6 +480,12 @@ export class ProductList implements OnInit, OnDestroy {
       return;
     }
 
-    this.isMobile.set(window.innerWidth < this.desktopBreakpoint);
+    const isMobileViewport = window.innerWidth < this.desktopBreakpoint;
+
+    if (this.isMobile() !== isMobileViewport) {
+      this.catalogFiltersService.setFiltersOpen(false);
+    }
+
+    this.isMobile.set(isMobileViewport);
   }
 }
