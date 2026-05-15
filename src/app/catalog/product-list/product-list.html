@@ -203,6 +203,10 @@
                             Antes USD {{ product.price | number: '1.0-2' }} | Ahora USD
                             {{ resolveDiscountedPriceUsd(product) | number: '1.0-2' }}
                           </p>
+                        } @else {
+                          <p class="product-price-discount-note m-0">
+                            USD {{ product.price | number: '1.0-2' }}
+                          </p>
                         }
                       </div>
 
