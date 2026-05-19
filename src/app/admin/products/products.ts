@@ -21,6 +21,7 @@ import { Product } from '../../core/models/product';
 import { DolarAPIService } from '../../core/services/dolar-api.service';
 import { ProductsService } from '../../core/services/products.service';
 import { ToastService } from '../../core/services/toast.service';
+import { EditCategoriesModal } from './edit-categories-modal/edit-categories-modal';
 import { NewProduct } from './new-product/new-product';
 
 interface CategoryOption {
@@ -31,6 +32,11 @@ interface CategoryOption {
 interface ProductsTablePageEvent {
   first?: number | null;
   rows?: number | null;
+}
+
+interface CategoryRenameResult {
+  previousName: string;
+  currentName: string;
 }
 
 @Component({
@@ -128,6 +134,34 @@ export class Products implements OnInit, OnDestroy {
           return;
         }
 
+        this.loadProducts(this.getCurrentPage());
+      },
+    );
+  }
+
+  protected openCategoriesModal(): void {
+    this.dialogCloseSubscription?.unsubscribe();
+
+    this.dialogRef = this.dialogService.open(EditCategoriesModal, {
+      header: 'Editar categorías',
+      width: 'min(92vw, 46rem)',
+      data: {
+        categories: this.categories(),
+      },
+    });
+
+    if (!this.dialogRef) {
+      return;
+    }
+
+    this.dialogCloseSubscription = this.dialogRef.onClose.subscribe(
+      (result?: { saved?: boolean; renamedCategories?: CategoryRenameResult[] }) => {
+        if (!result?.saved) {
+          return;
+        }
+
+        this.applyCategoryRenames(result.renamedCategories ?? []);
+        this.loadCategories();
         this.loadProducts(this.getCurrentPage());
       },
     );
@@ -279,5 +313,39 @@ export class Products implements OnInit, OnDestroy {
           this.categories.set([]);
         },
       });
+  }
+
+  private applyCategoryRenames(renamedCategories: CategoryRenameResult[]): void {
+    if (!renamedCategories.length) {
+      return;
+    }
+
+    const currentSelectedCategory = this.filtersForm.controls.category.value;
+    const nextSelectedCategory = this.resolveRenamedCategory(
+      currentSelectedCategory,
+      renamedCategories,
+    );
+
+    if (nextSelectedCategory !== currentSelectedCategory) {
+      this.filtersForm.controls.category.setValue(nextSelectedCategory);
+    }
+
+    const currentAppliedCategory = this.appliedCategory();
+    const nextAppliedCategory = this.resolveRenamedCategory(
+      currentAppliedCategory,
+      renamedCategories,
+    );
+
+    if (nextAppliedCategory !== currentAppliedCategory) {
+      this.appliedCategory.set(nextAppliedCategory);
+    }
+  }
+
+  private resolveRenamedCategory(value: string, renamedCategories: CategoryRenameResult[]): string {
+    return renamedCategories.reduce(
+      (currentValue, categoryRename) =>
+        currentValue === categoryRename.previousName ? categoryRename.currentName : currentValue,
+      value,
+    );
   }
 }

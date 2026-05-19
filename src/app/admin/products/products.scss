@@ -28,11 +28,18 @@
   flex-wrap: wrap;
 }
 
+.admin-products__header-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
 .admin-products__title {
   font-size: clamp(1.35rem, 1.1rem + 0.7vw, 1.8rem);
 }
 
-.admin-products__add {
+.admin-products__header-button {
   width: 100%;
 }
 
@@ -211,7 +218,11 @@
 }
 
 @media (min-width: 960px) {
-  .admin-products__add {
+  .admin-products__header-actions {
+    width: auto;
+  }
+
+  .admin-products__header-button {
     width: auto;
     min-width: 15rem;
   }
@@ -225,7 +236,11 @@
 }
 
 @media (max-width: 767px) {
-  .admin-products__add {
+  .admin-products__header-actions {
+    width: 100%;
+  }
+
+  .admin-products__header-button {
     width: 100%;
   }
 

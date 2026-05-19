@@ -27,13 +27,14 @@ describe('Products', () => {
                 },
               }),
             getCategories: () => of({ data: [] }),
+            updateCategory: () => of({ data: 'Change category success' }),
             deleteProduct: () => of({}),
           },
         },
         {
           provide: DolarAPIService,
           useValue: {
-            getParallelRate: () =>
+            getOfficialRate: () =>
               of({
                 fuente: 'BCV',
                 nombre: 'Paralelo',

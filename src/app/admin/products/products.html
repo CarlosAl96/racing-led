@@ -6,14 +6,25 @@
       <h2 class="admin-products__title m-0">Listado de productos</h2>
     </div>
 
-    <button
-      pButton
-      type="button"
-      icon="pi pi-plus"
-      label="Agregar producto"
-      class="admin-products__add"
-      (click)="openProductModal()"
-    ></button>
+    <div class="admin-products__header-actions">
+      <button
+        pButton
+        type="button"
+        icon="pi pi-tags"
+        label="Editar categorías"
+        class="admin-products__header-button"
+        (click)="openCategoriesModal()"
+      ></button>
+
+      <button
+        pButton
+        type="button"
+        icon="pi pi-plus"
+        label="Agregar producto"
+        class="admin-products__header-button admin-products__header-button--primary"
+        (click)="openProductModal()"
+      ></button>
+    </div>
   </div>
 
   @if (isLoading() && !hasProducts()) {

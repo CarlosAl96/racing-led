@@ -12,6 +12,7 @@ import { ResponsePagination } from '../models/responsePagination';
 export class ProductsService {
   private getProductsUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/dynamic-worker`;
   private getCategoriesUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/bright-worker`;
+  private updateCategoryUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/smart-worker`;
   private createProductUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/hyper-worker`;
   private updateProductUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/super-service/`;
   private deleteProductUrl: string = `${environment.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/quick-api/`;
@@ -51,6 +52,22 @@ export class ProductsService {
   public getCategories(): Observable<{ data: string[] }> {
     return this.http
       .get<{ data: string[] }>(this.getCategoriesUrl, { headers: new HttpHeaders() })
+      .pipe(catchError(this.handleError));
+  }
+
+  public updateCategory(
+    categoryName: string,
+    categoryReplace: string,
+  ): Observable<{ data: string }> {
+    return this.http
+      .put<{ data: string }>(
+        this.updateCategoryUrl,
+        {
+          categoryName,
+          categoryReplace,
+        },
+        { headers: new HttpHeaders() },
+      )
       .pipe(catchError(this.handleError));
   }
 

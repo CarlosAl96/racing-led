@@ -1,0 +1,79 @@
+<section class="edit-categories-modal">
+
+  @if (isLoadingCategories() && !hasCategories()) {
+    <div class="edit-categories-modal__state" role="status" aria-live="polite">
+      Cargando categorías...
+    </div>
+  } @else if (!hasCategories()) {
+    <div class="edit-categories-modal__state">
+      No hay categorías disponibles para editar en este momento.
+    </div>
+  } @else {
+    <div class="edit-categories-modal__list" role="list" aria-label="Listado de categorías">
+      @for (category of categories(); track category.id) {
+        <article class="edit-categories-modal__item" role="listitem">
+          <div class="edit-categories-modal__item-main">
+            <label class="edit-categories-modal__label" [for]="'category-name-' + category.id">
+              Categoría actual
+            </label>
+
+            @if (category.isEditing) {
+              <input
+                #draftInput
+                [id]="'category-name-' + category.id"
+                pInputText
+                type="text"
+                [value]="category.draftName"
+                [disabled]="category.isSaving"
+                autocomplete="off"
+                (input)="updateDraft(category.id, draftInput.value)"
+                (keydown.enter)="saveCategory(category.id)"
+              />
+            } @else {
+              <div class="edit-categories-modal__name" [id]="'category-name-' + category.id">
+                {{ category.name }}
+              </div>
+            }
+          </div>
+
+          <div class="edit-categories-modal__actions">
+            @if (category.isEditing) {
+              <button
+                pButton
+                type="button"
+                label="Cancelar"
+                severity="secondary"
+                [outlined]="true"
+                [disabled]="category.isSaving"
+                (click)="cancelEditing(category.id)"
+              ></button>
+
+              <button
+                pButton
+                type="button"
+                label="Guardar"
+                [loading]="category.isSaving"
+                [disabled]="category.isSaving"
+                (click)="saveCategory(category.id)"
+              ></button>
+            } @else {
+              <button
+                pButton
+                type="button"
+                icon="pi pi-pencil"
+                label="Editar"
+                severity="secondary"
+                [outlined]="true"
+                (click)="startEditing(category.id)"
+              ></button>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  }
+
+  <footer class="edit-categories-modal__footer">
+    <button pButton type="button" label="Cerrar" severity="secondary" [outlined]="true" (click)="close()"></button>
+  </footer>
+</section>
